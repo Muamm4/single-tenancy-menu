@@ -34,13 +34,31 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'street' => ['nullable', 'string', 'max:255'],
+            'number' => ['nullable', 'string', 'max:20'],
+            'neighborhood' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:255'],
+            'zip_code' => ['nullable', 'string', 'max:20'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->filled('street') && $request->filled('number')) {
+            $user->addresses()->create([
+                'street' => $request->street,
+                'number' => $request->number,
+                'neighborhood' => $request->neighborhood ?? '',
+                'city' => $request->city ?? '',
+                'zip_code' => $request->zip_code ?? '',
+                'is_default' => true,
+            ]);
+        }
 
         event(new Registered($user));
 

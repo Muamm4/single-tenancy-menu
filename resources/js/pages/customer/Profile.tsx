@@ -1,6 +1,5 @@
-import { Head, useForm, router } from '@inertiajs/react';
-import { User, Phone, Mail, Save, MapPin, Plus, Trash2, CheckCircle, LogOut } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
+import { Head, Link, useForm, router } from '@inertiajs/react';
+import { User, Phone, Mail, Save, MapPin, Plus, Trash2, CheckCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +22,7 @@ interface ProfileProps {
             name: string;
             email: string;
             phone?: string;
+            is_admin?: boolean;
         };
     };
     addresses: Address[];
@@ -76,11 +76,19 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
             <BottomNav />
             <Head title="Minha Conta" />
 
-            <main className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+1rem)]">
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold tracking-tight">Minha Conta</h1>
-                    <p className="text-muted-foreground">Gerencie seus dados e preferências</p>
+            <header
+                className="p-4 shrink-0 pt-[calc(var(--safe-top)+1rem)]"
+                style={{ backgroundColor: 'var(--header-background)', color: 'var(--header-foreground)' }}
+            >
+                <div className="flex items-center justify-center max-w-6xl mx-auto">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold">Minha Conta</h1>
+                        <p className="mt-1 text-sm opacity-90">Gerencie seus dados e preferências</p>
+                    </div>
                 </div>
+            </header>
+
+            <main className="container mx-auto px-4 py-8">
 
                 <div className="max-w-md mx-auto space-y-6">
                     <Card>
@@ -184,9 +192,12 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
                             </div>
 
                             <div className="pt-4 border-t">
-                                <h4 className="text-sm font-semibold mb-3">Adicionar Novo Endereço</h4>
-                                <form onSubmit={(e) => { e.preventDefault(); handleAddAddress(e); }} className="grid grid-cols-2 gap-3">
-                                    <div className="col-span-2 space-y-1">
+                                <h4 className="flex items-center gap-1.5 text-sm font-semibold mb-3">
+                                    <Plus className="size-3.5" />
+                                    Adicionar Novo Endereço
+                                </h4>
+                                <form onSubmit={(e) => { e.preventDefault(); handleAddAddress(e); }} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="sm:col-span-2 space-y-1">
                                         <Label className="text-xs">Rua</Label>
                                         <Input value={addressForm.data.street} onChange={e => addressForm.setData('street', e.target.value)} className="h-8 text-sm" />
                                     </div>
@@ -206,7 +217,7 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
                                         <Label className="text-xs">Cidade</Label>
                                         <Input value={addressForm.data.city} onChange={e => addressForm.setData('city', e.target.value)} className="h-8 text-sm" />
                                     </div>
-                                    <Button type="submit" disabled={addressForm.processing} className="col-span-2 gap-2 h-9">
+                                    <Button type="submit" disabled={addressForm.processing} className="sm:col-span-2 gap-2 h-9">
                                         <Plus className="size-4" />
                                         Salvar Endereço
                                     </Button>
@@ -214,6 +225,15 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
                             </div>
                         </CardContent>
                     </Card>
+
+                    {auth.user.is_admin && (
+                        <Button asChild variant="default" className="w-full gap-2 py-6">
+                            <Link href="/admin">
+                                <LayoutDashboard className="size-4" />
+                                Painel Administrativo
+                            </Link>
+                        </Button>
+                    )}
 
                     <Button variant="destructive" onClick={handleLogout} className="w-full gap-2 py-6">
                         <LogOut className="size-4" />

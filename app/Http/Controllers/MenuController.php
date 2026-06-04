@@ -10,7 +10,7 @@ class MenuController extends Controller
     public function index()
     {
         $categories = Category::with(['products' => function ($query) {
-            $query->where('is_active', true)->orderBy('sort_order');
+            $query->with('category')->where('is_active', true)->orderBy('sort_order');
         }])
             ->where('is_active', true)
             ->orderBy('sort_order')

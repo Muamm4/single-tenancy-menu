@@ -1,6 +1,6 @@
 import { type BreadcrumbItem, type Order, type PaginatedResponse } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ClipboardList, MessageSquare, ExternalLink } from 'lucide-react';
+import { Check, ClipboardList, ExternalLink, MessageSquare, X } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
@@ -77,6 +77,10 @@ export default function OrdersIndex({ orders, filterStatus }: OrdersIndexProps) 
         }
     };
 
+    const handleStatusUpdate = (orderId: number, status: 'accepted' | 'rejected') => {
+        router.patch(route('admin.orders.update-status', orderId), { status });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pedidos" />
@@ -120,60 +124,156 @@ export default function OrdersIndex({ orders, filterStatus }: OrdersIndexProps) 
                                 </p>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="border-b bg-muted/50">
-                                        <tr>
-                                            <th className="p-4 text-left font-medium">ID</th>
-                                            <th className="p-4 text-left font-medium">Cliente</th>
-                                            <th className="p-4 text-left font-medium">Telefone</th>
-                                            <th className="p-4 text-left font-medium">Itens</th>
-                                            <th className="p-4 text-left font-medium">Total</th>
-                                            <th className="p-4 text-left font-medium">Status</th>
-                                            <th className="p-4 text-left font-medium">Data</th>
-                                            <th className="p-4 text-left font-medium">Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {orders.data.map((order) => (
-                                            <tr key={order.id} className="border-b transition-colors hover:bg-muted/50">
-                                                <td className="p-4 font-medium">#{order.id}</td>
-                                                <td className="p-4">{order.customer_name}</td>
-                                                <td className="p-4">
-                                                    <a
-                                                        href={`https://wa.me/55${order.customer_phone.replace(/\D/g, '')}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-primary hover:underline"
-                                                    >
-                                                        <MessageSquare className="size-3" />
-                                                        {order.customer_phone}
-                                                    </a>
-                                                </td>
-                                                <td className="p-4">{order.items.length}</td>
-                                                <td className="p-4 font-medium">{formatPrice(order.total)}</td>
-                                                <td className="p-4">
-                                                    <Badge variant={getStatusBadgeVariant(order.status)}>
-                                                        {getStatusLabel(order.status)}
-                                                    </Badge>
-                                                </td>
-                                                <td className="p-4 text-muted-foreground">
-                                                    {formatDate(order.created_at)}
-                                                </td>
-                                                <td className="p-4">
-                                                    <Link
-                                                        href={route('admin.orders.show', order.id)}
-                                                        className="inline-flex items-center gap-1 text-primary hover:underline"
-                                                    >
-                                                        <ExternalLink className="size-3" />
-                                                        Detalhes
-                                                    </Link>
-                                                </td>
+                            <>
+                                <div className="divide-y md:hidden">
+                                    {orders.data.map((order) => (
+                                        <div key={order.id} className="p-4 space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="font-semibold">#{order.id}</span>
+                                                <Badge variant={getStatusBadgeVariant(order.status)}>
+                                                    {getStatusLabel(order.status)}
+                                                </Badge>
+                                            </div>
+
+                                            <p className="text-sm font-medium">{order.customer_name}</p>
+
+                                            <a
+                                                href={`https://wa.me/55${order.customer_phone.replace(/\D/g, '')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                                            >
+                                                <MessageSquare className="size-3" />
+                                                {order.customer_phone}
+                                            </a>
+
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-muted-foreground">
+                                                    {order.items.length} {order.items.length === 1 ? 'item' : 'itens'}
+                                                </span>
+                                                <span className="font-semibold">{formatPrice(order.total)}</span>
+                                            </div>
+
+                                            <p className="text-xs text-muted-foreground">
+                                                {formatDate(order.created_at)}
+                                            </p>
+
+                                            <div className="flex items-center justify-between gap-2 pt-1">
+                                                <div className="flex gap-2">
+                                                    {order.status === 'pending' && (
+                                                        <>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="destructive"
+                                                                onClick={() => handleStatusUpdate(order.id, 'rejected')}
+                                                            >
+                                                                <X className="size-3" />
+                                                                Recusar
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                className="bg-green-600 hover:bg-green-700"
+                                                                onClick={() => handleStatusUpdate(order.id, 'accepted')}
+                                                            >
+                                                                <Check className="size-3" />
+                                                                Aceitar
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                <Link
+                                                    href={route('admin.orders.show', order.id)}
+                                                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                                                >
+                                                    Detalhes
+                                                    <ExternalLink className="size-3" />
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="hidden overflow-x-auto md:block">
+                                    <table className="w-full text-sm">
+                                        <thead className="border-b bg-muted/50">
+                                            <tr>
+                                                <th className="p-4 text-left font-medium">ID</th>
+                                                <th className="p-4 text-left font-medium">Cliente</th>
+                                                <th className="p-4 text-left font-medium">Telefone</th>
+                                                <th className="p-4 text-left font-medium">Itens</th>
+                                                <th className="p-4 text-left font-medium">Total</th>
+                                                <th className="p-4 text-left font-medium">Status</th>
+                                                <th className="p-4 text-left font-medium">Data</th>
+                                                <th className="p-4 text-left font-medium">Ações</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {orders.data.map((order) => (
+                                                <tr key={order.id} className="border-b transition-colors hover:bg-muted/50">
+                                                    <td className="p-4 font-medium">#{order.id}</td>
+                                                    <td className="p-4">{order.customer_name}</td>
+                                                    <td className="p-4">
+                                                        <a
+                                                            href={`https://wa.me/55${order.customer_phone.replace(/\D/g, '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 text-primary hover:underline"
+                                                        >
+                                                            <MessageSquare className="size-3" />
+                                                            {order.customer_phone}
+                                                        </a>
+                                                    </td>
+                                                    <td className="p-4">{order.items.length}</td>
+                                                    <td className="p-4 font-medium">{formatPrice(order.total)}</td>
+                                                    <td className="p-4">
+                                                        <Badge variant={getStatusBadgeVariant(order.status)}>
+                                                            {getStatusLabel(order.status)}
+                                                        </Badge>
+                                                    </td>
+                                                    <td className="p-4 text-muted-foreground">
+                                                        {formatDate(order.created_at)}
+                                                    </td>
+                                                    <td className="p-4">
+                                                        {order.status === 'pending' ? (
+                                                            <div className="flex items-center gap-1">
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="destructive"
+                                                                    onClick={() => handleStatusUpdate(order.id, 'rejected')}
+                                                                >
+                                                                    <X className="size-3" />
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    className="bg-green-600 hover:bg-green-700"
+                                                                    onClick={() => handleStatusUpdate(order.id, 'accepted')}
+                                                                >
+                                                                    <Check className="size-3" />
+                                                                </Button>
+                                                                <Link
+                                                                    href={route('admin.orders.show', order.id)}
+                                                                    className="inline-flex items-center gap-1 text-primary hover:underline ml-1"
+                                                                >
+                                                                    <ExternalLink className="size-3" />
+                                                                    Detalhes
+                                                                </Link>
+                                                            </div>
+                                                        ) : (
+                                                            <Link
+                                                                href={route('admin.orders.show', order.id)}
+                                                                className="inline-flex items-center gap-1 text-primary hover:underline"
+                                                            >
+                                                                <ExternalLink className="size-3" />
+                                                                Detalhes
+                                                            </Link>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
                         )}
 
                         {orders.links && orders.links.length > 3 && (

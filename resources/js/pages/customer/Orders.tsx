@@ -32,11 +32,19 @@ export default function Orders({ orders }: OrdersProps) {
             <BottomNav />
             <Head title="Meus Pedidos" />
 
-            <main className="container mx-auto px-4 py-8 pt-[calc(env(safe-area-inset-top)+1rem)]">
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold tracking-tight">Meus Pedidos</h1>
-                    <p className="text-muted-foreground">Acompanhe o status dos seus pedidos</p>
+            <header
+                className="p-4 shrink-0 pt-[calc(var(--safe-top)+1rem)]"
+                style={{ backgroundColor: 'var(--header-background)', color: 'var(--header-foreground)' }}
+            >
+                <div className="flex items-center justify-center max-w-6xl mx-auto">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold">Meus Pedidos</h1>
+                        <p className="mt-1 text-sm opacity-90">Acompanhe o status dos seus pedidos</p>
+                    </div>
                 </div>
+            </header>
+
+            <main className="container mx-auto px-4 py-8">
 
                 {orders.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-center">

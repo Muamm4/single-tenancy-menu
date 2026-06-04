@@ -1,6 +1,6 @@
 import { type BreadcrumbItem, type Order, type CartItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Check, X, MessageSquare, Package, User, Phone, Clock, DollarSign } from 'lucide-react';
+import { ArrowLeft, Check, X, MessageSquare, Package, User, Phone, Clock, DollarSign, UtensilsCrossed } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
@@ -18,11 +18,15 @@ function formatPrice(price: number): string {
     }).format(price);
 }
 
-function getStatusBadgeVariant(status: Order['status']): 'default' | 'secondary' | 'destructive' {
+function getStatusBadgeVariant(status: Order['status']): 'default' | 'secondary' | 'destructive' | 'outline' {
     switch (status) {
         case 'pending':
             return 'secondary';
         case 'accepted':
+            return 'default';
+        case 'preparing':
+            return 'outline';
+        case 'ready':
             return 'default';
         case 'rejected':
             return 'destructive';
@@ -37,6 +41,10 @@ function getStatusLabel(status: Order['status']): string {
             return 'Pendente';
         case 'accepted':
             return 'Aceito';
+        case 'preparing':
+            return 'Preparando';
+        case 'ready':
+            return 'Pronto';
         case 'rejected':
             return 'Recusado';
         default:
@@ -51,7 +59,7 @@ export default function OrderShow({ order }: OrderShowProps) {
         { title: `Pedido #${order.id}`, href: '#' },
     ];
 
-    const updateStatus = (status: 'accepted' | 'rejected') => {
+    const updateStatus = (status: 'accepted' | 'rejected' | 'preparing' | 'ready') => {
         router.patch(route('admin.orders.update-status', order.id), {
             status,
         });
@@ -63,15 +71,15 @@ export default function OrderShow({ order }: OrderShowProps) {
     };
 
     const formatItemName = (item: CartItem): string => {
-        return (item as Record<string, string>)['product_name'] || item.name;
+        return item.product_name || item.name;
     };
 
     const getItemUnitPrice = (item: CartItem): number => {
-        return (item as Record<string, number>)['unit_price'] || item.price;
+        return item.unit_price || item.price;
     };
 
     const getItemSubtotal = (item: CartItem): number => {
-        return (item as Record<string, number>)['subtotal'] || item.price * item.quantity;
+        return item.subtotal || item.price * item.quantity;
     };
 
     return (
@@ -146,7 +154,37 @@ export default function OrderShow({ order }: OrderShowProps) {
                         <CardTitle className="text-base">Itens do Pedido</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="overflow-x-auto">
+                        {/* Mobile: card view */}
+                        <div className="space-y-3 md:hidden">
+                            {order.items.map((item: CartItem) => (
+                                <div key={item.id} className="rounded-lg border p-4">
+                                    <p className="font-medium">{formatItemName(item)}</p>
+                                    <div className="mt-3 space-y-1.5 text-sm">
+                                        <div className="flex justify-between text-muted-foreground">
+                                            <span>Quantidade</span>
+                                            <span className="font-medium text-foreground">{item.quantity}</span>
+                                        </div>
+                                        <div className="flex justify-between text-muted-foreground">
+                                            <span>Preço Unit.</span>
+                                            <span className="font-medium text-foreground">{formatPrice(getItemUnitPrice(item))}</span>
+                                        </div>
+                                        <div className="flex justify-between border-t pt-1.5 text-muted-foreground">
+                                            <span>Subtotal</span>
+                                            <span className="font-semibold text-foreground">{formatPrice(getItemSubtotal(item))}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="rounded-lg border bg-muted/50 p-4">
+                                <div className="flex justify-between font-bold">
+                                    <span>Total</span>
+                                    <span className="text-primary">{formatPrice(order.total)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Desktop: table view */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead className="border-b bg-muted/50">
                                     <tr>
@@ -184,18 +222,18 @@ export default function OrderShow({ order }: OrderShowProps) {
                 </Card>
 
                 {order.status === 'pending' && (
-                    <div className="flex justify-end items-center gap-4 mt-8">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:justify-end mt-8">
                         <Button
                             onClick={() => updateStatus('rejected')}
                             variant="destructive"
-                            className="gap-2"
+                            className="gap-2 w-full sm:w-auto"
                         >
                             <X className="size-4" />
                             Recusar Pedido
                         </Button>
                         <Button
                             onClick={() => updateStatus('accepted')}
-                            className="gap-2 bg-green-600 hover:bg-green-700"
+                            className="gap-2 w-full sm:w-auto bg-green-600 hover:bg-green-700"
                         >
                             <Check className="size-4" />
                             Aceitar Pedido
@@ -203,7 +241,39 @@ export default function OrderShow({ order }: OrderShowProps) {
                     </div>
                 )}
 
-                {order.whatsapp_sent && order.status === 'accepted' && (
+                {order.status === 'accepted' && (
+                    <div className="flex flex-col gap-3 sm:flex-row sm:justify-end mt-8">
+                        <Button
+                            onClick={() => updateStatus('rejected')}
+                            variant="destructive"
+                            className="gap-2 w-full sm:w-auto"
+                        >
+                            <X className="size-4" />
+                            Recusar
+                        </Button>
+                        <Button
+                            onClick={() => updateStatus('preparing')}
+                            className="gap-2 w-full sm:w-auto bg-amber-600 hover:bg-amber-700"
+                        >
+                            <UtensilsCrossed className="size-4" />
+                            Preparar
+                        </Button>
+                    </div>
+                )}
+
+                {order.status === 'preparing' && (
+                    <div className="flex justify-end mt-8">
+                        <Button
+                            onClick={() => updateStatus('ready')}
+                            className="gap-2 w-full sm:w-auto bg-green-600 hover:bg-green-700"
+                        >
+                            <Check className="size-4" />
+                            Pronto
+                        </Button>
+                    </div>
+                )}
+
+                {order.whatsapp_sent && (order.status === 'accepted' || order.status === 'preparing' || order.status === 'ready') && (
                     <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-200">
                         Pedido aceito — notificação enviada para o WhatsApp do cliente.
                     </div>

@@ -81,6 +81,10 @@ export interface CartItem {
     price: number;
     quantity: number;
     image: string | null;
+    category_name?: string;
+    unit_price?: number;
+    subtotal?: number;
+    product_name?: string;
 }
 
 export interface Order {
@@ -90,7 +94,7 @@ export interface Order {
     items: CartItem[];
     total: number;
     formatted_total?: string;
-    status: 'pending' | 'accepted' | 'rejected';
+    status: 'pending' | 'accepted' | 'rejected' | 'preparing' | 'ready';
     whatsapp_sent: boolean;
     notes: string | null;
     created_at: string;

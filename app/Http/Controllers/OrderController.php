@@ -20,6 +20,7 @@ class OrderController extends Controller
             'items.*.id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'total' => 'required|numeric',
+            'address_id' => 'nullable|exists:addresses,id',
         ]);
 
         return DB::transaction(function () use ($validated) {
@@ -41,6 +42,10 @@ class OrderController extends Controller
                 ];
             }
 
+            $addressId = Auth::check()
+                ? ($validated['address_id'] ?? Auth::user()->defaultAddress?->id)
+                : null;
+
             $order = Order::create([
                 'customer_name' => $validated['customer_name'],
                 'customer_phone' => $validated['customer_phone'],
@@ -49,6 +54,7 @@ class OrderController extends Controller
                 'total' => $calculatedTotal,
                 'status' => 'pending',
                 'user_id' => Auth::id(),
+                'address_id' => $addressId,
             ]);
 
             $whatsappMessage = "Olá! Gostaria de fazer um pedido:\n\n";
@@ -57,6 +63,11 @@ class OrderController extends Controller
             }
             $whatsappMessage .= "\nTotal: R$ ".number_format($calculatedTotal, 2, ',', '.');
             $whatsappMessage .= "\n\nNome: {$order->customer_name}\nTelefone: {$order->customer_phone}";
+
+            if ($order->address) {
+                $address = $order->address;
+                $whatsappMessage .= "\nEndereço: {$address->street}, {$address->number} - {$address->neighborhood}, {$address->city} - {$address->zip_code}";
+            }
 
             $whatsappLink = 'https://wa.me/'.preg_replace('/\D/', '', $order->customer_phone).'?text='.urlencode($whatsappMessage);
 

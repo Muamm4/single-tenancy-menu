@@ -1,12 +1,22 @@
 import { useState } from 'react';
-import { Head } from '@inertiajs/react';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, ShoppingBag } from 'lucide-react';
+import { Head, usePage } from '@inertiajs/react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, ShoppingBag, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/stores/cartStore';
 import { BottomNav } from '@/components/public/BottomNav';
+
+interface Address {
+    id: number;
+    street: string;
+    number: string;
+    neighborhood: string;
+    city: string;
+    zip_code: string;
+    is_default: boolean;
+}
 
 function formatPrice(price: number): string {
     return new Intl.NumberFormat('pt-BR', {
@@ -16,9 +26,20 @@ function formatPrice(price: number): string {
 }
 
 export default function Cart() {
+    const { props } = usePage<{
+        auth?: { user?: { name?: string; email?: string; phone?: string } };
+        addresses?: Address[];
+        defaultAddress?: Address | null;
+    }>();
+
     const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
-    const [customerName, setCustomerName] = useState('');
-    const [customerPhone, setCustomerPhone] = useState('');
+    const user = props.auth?.user;
+    const addresses = props.addresses || [];
+    const defaultAddr = props.defaultAddress;
+
+    const [customerName, setCustomerName] = useState(user?.name || '');
+    const [customerPhone, setCustomerPhone] = useState(user?.phone || '');
+    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(defaultAddr?.id || null);
     const [notes, setNotes] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -30,7 +51,7 @@ export default function Cart() {
 
         setIsSubmitting(true);
         try {
-            const payload = {
+            const payload: Record<string, unknown> = {
                 customer_name: customerName,
                 customer_phone: customerPhone,
                 notes,
@@ -40,6 +61,10 @@ export default function Cart() {
                 })),
                 total: totalPrice(),
             };
+
+            if (selectedAddressId) {
+                payload.address_id = selectedAddressId;
+            }
 
             const response = await fetch('/orders', {
                 method: 'POST',
@@ -100,13 +125,19 @@ export default function Cart() {
         <div className="min-h-screen bg-background pb-24">
             <BottomNav />
             <Head title="Carrinho" />
-
-            <main className="container mx-auto px-4 py-8 pt-[calc(var(--safe-top)+1rem)]">
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold tracking-tight">Seu Carrinho</h1>
-                    <p className="text-muted-foreground">{items.length} item(ns) adicionados</p>
+            <header
+                className="p-4 shrink-0 pt-[calc(var(--safe-top)+1rem)]"
+                style={{ backgroundColor: 'var(--header-background)', color: 'var(--header-foreground)' }}
+            >
+                <div className="flex items-center justify-center max-w-6xl mx-auto">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold">Seu Carrinho</h1>
+                        <p className="mt-1 text-sm opacity-90">{items.length} item(ns) adicionados</p>
+                    </div>
                 </div>
+            </header>
 
+            <main className="container mx-auto px-4 py-8">
                 {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <ShoppingCart className="size-16 text-muted-foreground/20 mb-4" />
@@ -134,6 +165,11 @@ export default function Cart() {
                                     )}
                                     <div className="flex-1 min-w-0">
                                         <p className="font-medium text-sm leading-tight">{item.name}</p>
+                                        {item.category_name && (
+                                            <p className="text-[11px] text-muted-foreground/60 mt-0.5">
+                                                {item.category_name}
+                                            </p>
+                                        )}
                                         <p className="text-sm text-primary font-semibold mt-1">
                                             {formatPrice(item.price)}
                                         </p>
@@ -200,6 +236,46 @@ export default function Cart() {
                                     required
                                 />
                             </div>
+
+                            {addresses.length > 0 && (
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2">
+                                        <MapPin className="size-4" />
+                                        Endereço de entrega
+                                    </Label>
+                                    <div className="space-y-2">
+                                        {addresses.map((address) => (
+                                            <label
+                                                key={address.id}
+                                                className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                                                    selectedAddressId === address.id
+                                                        ? 'border-primary bg-primary/5'
+                                                        : 'hover:bg-muted/50'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="address"
+                                                    className="mt-1"
+                                                    checked={selectedAddressId === address.id}
+                                                    onChange={() => setSelectedAddressId(address.id)}
+                                                />
+                                                <div className="text-sm">
+                                                    <p className="font-medium">
+                                                        {address.street}, {address.number}
+                                                    </p>
+                                                    <p className="text-muted-foreground text-xs">
+                                                        {address.neighborhood}, {address.city} - {address.zip_code}
+                                                    </p>
+                                                    {address.is_default && (
+                                                        <span className="text-[10px] text-primary font-medium">Padrão</span>
+                                                    )}
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="space-y-2">
                                 <Label htmlFor="notes">Observações</Label>

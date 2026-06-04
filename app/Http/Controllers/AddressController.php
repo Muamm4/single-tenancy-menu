@@ -5,18 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class AddressController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('customer/Profile', [
-            'addresses' => Auth::user()->addresses()->orderBy('is_default', 'desc')->get(),
-            'defaultAddress' => Auth::user()->defaultAddress,
-        ]);
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([

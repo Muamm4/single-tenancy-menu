@@ -52,4 +52,24 @@ class Order extends Model
     {
         return $query->where('status', 'pending');
     }
+
+    public function scopeAccepted($query)
+    {
+        return $query->where('status', 'accepted');
+    }
+
+    public function scopePreparing($query)
+    {
+        return $query->where('status', 'preparing');
+    }
+
+    public function scopeReady($query)
+    {
+        return $query->where('status', 'ready');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
 }
