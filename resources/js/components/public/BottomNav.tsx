@@ -1,11 +1,12 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ShoppingBag, User, ShoppingCart, ClipboardList } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ShoppingBag, User, ShoppingCart, ClipboardList, Download } from 'lucide-react';
+import { useInstallPrompt } from '@/hooks/use-install-prompt';
 
 export function BottomNav() {
     const { url, props } = usePage();
     const appColors = (props as any).appColors as Record<string, string> | undefined;
     const menuOnly = appColors?.menu_only === 'true';
+    const { canInstall, install } = useInstallPrompt();
     
     const navItems = [
         { 
@@ -51,6 +52,17 @@ export function BottomNav() {
                         <span className="text-[10px] font-medium">{item.name}</span>
                     </Link>
                 ))}
+
+                {canInstall && (
+                    <button
+                        onClick={install}
+                        className="flex flex-col items-center gap-1 transition-colors text-primary"
+                        title="Instalar aplicativo"
+                    >
+                        <Download className="size-6" />
+                        <span className="text-[10px] font-medium">Instalar</span>
+                    </button>
+                )}
             </div>
         </nav>
     );
