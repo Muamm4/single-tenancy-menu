@@ -8,9 +8,9 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v={{ filemtime(public_path('favicon.svg')) }}">
     <meta name="theme-color" content="{{ App\Models\Setting::getValue('primary_color', '#2C402E') }}">
-    <link rel="apple-touch-icon" href="/icons/icon-128x128.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/icons/icon-512x512.png">
 
     @php
         $primary = App\Models\Setting::getValue('primary_color', '#ef4444');
