@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -22,6 +23,7 @@ class ProductController extends Controller
         }
 
         $products = $query->orderBy('sort_order')
+            ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
 
@@ -52,9 +54,22 @@ class ProductController extends Controller
         }
 
         $data['is_active'] = $request->boolean('is_active');
-        $data['sort_order'] = $request->input('sort_order', 0);
+        $sortOrder = $request->input('sort_order')
+            ? (int) $request->input('sort_order')
+            : Product::where('category_id', $data['category_id'])->max('sort_order') + 1;
 
-        Product::create($data);
+        if ($request->input('sort_order')) {
+            DB::transaction(function () use ($data, $sortOrder) {
+                Product::where('category_id', $data['category_id'])
+                    ->where('sort_order', '>=', $sortOrder)
+                    ->increment('sort_order');
+
+                Product::create(array_merge($data, ['sort_order' => $sortOrder]));
+            });
+        } else {
+            $data['sort_order'] = $sortOrder;
+            Product::create($data);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produto criado com sucesso.');
@@ -80,10 +95,20 @@ class ProductController extends Controller
             }
 
             $data['image'] = $request->file('image')->store('products', 'public');
+        } elseif ($request->boolean('remove_image') && $product->image) {
+            Storage::disk('public')->delete($product->image);
+            $data['image'] = null;
         }
 
         $data['is_active'] = $request->boolean('is_active');
-        $data['sort_order'] = $request->input('sort_order', 0);
+        $data['sort_order'] = (int) $request->input('sort_order', 0);
+
+        $oldCategoryId = $product->getOriginal('category_id');
+        $oldSortOrder = $product->getOriginal('sort_order');
+        $newCategoryId = (int) $data['category_id'];
+        $newSortOrder = $data['sort_order'];
+
+        $this->reorderProducts($product, $oldSortOrder, $newSortOrder, $oldCategoryId, $newCategoryId);
 
         $product->update($data);
 
@@ -101,5 +126,35 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produto excluído com sucesso.');
+    }
+
+    private function reorderProducts(Product $product, $oldSortOrder, $newSortOrder, $oldCategoryId, $newCategoryId)
+    {
+
+     DB::transaction(function () use ($product, $oldCategoryId, $oldSortOrder, $newCategoryId, $newSortOrder) {
+            if ($oldCategoryId !== $newCategoryId) {
+                // Product moved to a different category
+                Product::where('category_id', $oldCategoryId)
+                    ->where('sort_order', '>', $oldSortOrder)
+                    ->decrement('sort_order');
+
+                Product::where('category_id', $newCategoryId)
+                    ->where('sort_order', '>=', $newSortOrder)
+                    ->increment('sort_order');
+            } elseif ($newSortOrder !== $oldSortOrder) {
+                // Same category, sort_order changed
+                if ($newSortOrder > $oldSortOrder) {
+                    Product::where('category_id', $oldCategoryId)
+                        ->where('id', '!=', $product->id)
+                        ->whereBetween('sort_order', [$oldSortOrder + 1, $newSortOrder])
+                        ->decrement('sort_order');
+                } else {
+                    Product::where('category_id', $oldCategoryId)
+                        ->where('id', '!=', $product->id)
+                        ->whereBetween('sort_order', [$newSortOrder, $oldSortOrder - 1])
+                        ->increment('sort_order');
+                }
+            }
+        });
     }
 }

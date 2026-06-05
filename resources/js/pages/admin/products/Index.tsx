@@ -150,6 +150,7 @@ export default function ProductsIndex({ products, categories, filterCategory }: 
                                             )}
                                             <div className="flex min-w-0 flex-1 flex-col gap-1">
                                                 <p className="truncate font-medium">{product.name}</p>
+                                                <p className="truncate text-xs text-muted-foreground/60">Ordem: {product.sort_order}</p>
                                                 <div className="flex items-center gap-2">
                                                     {product.category?.name && (
                                                         <Badge variant="secondary" className="shrink-0">
@@ -193,6 +194,7 @@ export default function ProductsIndex({ products, categories, filterCategory }: 
                                     <table className="w-full text-sm">
                                         <thead className="border-b bg-muted/50">
                                             <tr>
+                                                <th className="p-4 text-left font-medium w-16">Ordem</th>
                                                 <th className="p-4 text-left font-medium">Imagem</th>
                                                 <th className="p-4 text-left font-medium">Nome</th>
                                                 <th className="p-4 text-left font-medium">Categoria</th>
@@ -205,6 +207,7 @@ export default function ProductsIndex({ products, categories, filterCategory }: 
                                         <tbody>
                                             {products.data.map((product) => (
                                                 <tr key={product.id} className="border-b transition-colors hover:bg-muted/50">
+                                                    <td className="p-4 text-muted-foreground text-center">{product.sort_order}</td>
                                                     <td className="p-4">
                                                         {product.image ? (
                                                             <img

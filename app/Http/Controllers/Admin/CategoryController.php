@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -15,6 +16,7 @@ class CategoryController extends Controller
     {
         $categories = Category::withCount('products')
             ->orderBy('sort_order')
+            ->orderBy('name')
             ->paginate(10);
 
         return Inertia::render('admin/categories/Index', [
@@ -36,9 +38,21 @@ class CategoryController extends Controller
         }
 
         $data['is_active'] = $request->boolean('is_active');
-        $data['sort_order'] = $request->input('sort_order', 0);
+        $sortOrder = $request->input('sort_order')
+            ? (int) $request->input('sort_order')
+            : Category::max('sort_order') + 1;
 
-        Category::create($data);
+        if ($request->input('sort_order')) {
+            DB::transaction(function () use ($data, $sortOrder) {
+                Category::where('sort_order', '>=', $sortOrder)
+                    ->increment('sort_order');
+
+                Category::create(array_merge($data, ['sort_order' => $sortOrder]));
+            });
+        } else {
+            $data['sort_order'] = $sortOrder;
+            Category::create($data);
+        }
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Categoria criada com sucesso.');
@@ -64,7 +78,24 @@ class CategoryController extends Controller
         }
 
         $data['is_active'] = $request->boolean('is_active');
-        $data['sort_order'] = $request->input('sort_order', 0);
+        $data['sort_order'] = (int) $request->input('sort_order', 0);
+
+        $oldSortOrder = $category->getOriginal('sort_order');
+        $newSortOrder = $data['sort_order'];
+
+        if ($newSortOrder !== $oldSortOrder) {
+            DB::transaction(function () use ($category, $oldSortOrder, $newSortOrder) {
+                if ($newSortOrder > $oldSortOrder) {
+                    Category::where('id', '!=', $category->id)
+                        ->whereBetween('sort_order', [$oldSortOrder + 1, $newSortOrder])
+                        ->decrement('sort_order');
+                } else {
+                    Category::where('id', '!=', $category->id)
+                        ->whereBetween('sort_order', [$newSortOrder, $oldSortOrder - 1])
+                        ->increment('sort_order');
+                }
+            });
+        }
 
         $category->update($data);
 
