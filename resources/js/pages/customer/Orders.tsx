@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
+import { useEffect } from 'react';
 import { Order } from '@/types';
 import { Package, Clock, CheckCircle, XCircle, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,6 +28,16 @@ function getStatusBadge(status: Order['status']) {
 }
 
 export default function Orders({ orders }: OrdersProps) {
+    const { props } = usePage();
+    const appColors = (props as any).appColors as Record<string, string> | undefined;
+    const menuOnly = appColors?.menu_only === 'true';
+
+    useEffect(() => {
+        if (menuOnly) {
+            router.visit(route('menu'));
+        }
+    }, [menuOnly]);
+
     return (
         <div className="min-h-screen bg-background pb-24">
             <BottomNav />

@@ -112,7 +112,7 @@ export default function MenuIndex({ categories }: MenuIndexProps) {
                     </div>
                 </nav>
 
-                <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-8 space-y-12 pb-[calc(var(--safe-bottom)+6rem)]">
+                <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-8 mb-24 space-y-12 pb-[calc(var(--safe-bottom)+6rem)]">
                     {categories.map((category) => (
                         <section key={category.id} id={category.slug} className="scroll-mt-24">
                             <h2 className="text-2xl font-semibold mb-8 border-b pb-2">{category.name}</h2>

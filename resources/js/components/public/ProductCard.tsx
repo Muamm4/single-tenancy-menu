@@ -3,6 +3,7 @@ import { Product } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cartStore';
 import { useToast } from '@/components/ui/Toast';
+import { usePage } from '@inertiajs/react';
 import { Tag } from 'lucide-react';
 
 interface ProductCardProps {
@@ -11,6 +12,9 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) => {
+    const { props } = usePage();
+    const appColors = (props as any).appColors as Record<string, string> | undefined;
+    const menuOnly = appColors?.menu_only === 'true';
     const { addItem } = useCartStore();
     const { addToast } = useToast();
 
@@ -60,9 +64,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
                                 <span className="font-bold text-sm">{product.formatted_price}</span>
                             )}
                         </div>
-                        <Button onClick={handleAddToCart} size="sm" className="h-7 text-xs px-3">
-                            Adicionar
-                        </Button>
+                            {!menuOnly && (
+                                <Button onClick={handleAddToCart} size="sm" className="h-7 text-xs px-3">
+                                    Adicionar
+                                </Button>
+                            )}
                     </div>
                 </div>
             </div>
@@ -109,11 +115,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
                             <span className="font-bold text-lg">{product.formatted_price}</span>
                         )}
                     </div>
-                    <Button onClick={handleAddToCart} size="sm">
-                        Adicionar
-                    </Button>
+                    {!menuOnly && (
+                        <Button onClick={handleAddToCart} size="sm">
+                            Adicionar
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>
     );
 };
+

@@ -1,11 +1,12 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Store } from 'lucide-react';
+import { Store, Eye } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import type { BreadcrumbItem } from '@/types';
 
 interface AppearanceProps {
@@ -27,6 +28,7 @@ export default function Appearance({ colors }: AppearanceProps) {
     const [headerBackground, setHeaderBackground] = useState(colors.header_background || '#2C402E');
     const [headerForeground, setHeaderForeground] = useState(colors.header_foreground || '#ffffff');
     const [restaurantName, setRestaurantName] = useState(colors.restaurant_name || '');
+    const [menuOnly, setMenuOnly] = useState(colors.menu_only === 'true');
 
     const previewStyle = {
         '--preview-primary': primaryColor,
@@ -48,6 +50,7 @@ export default function Appearance({ colors }: AppearanceProps) {
             header_background: headerBackground,
             header_foreground: headerForeground,
             restaurant_name: restaurantName,
+            menu_only: menuOnly ? 'true' : 'false',
         });
     };
 
@@ -93,6 +96,36 @@ export default function Appearance({ colors }: AppearanceProps) {
                                             <p className="text-sm text-destructive">{errors.restaurant_name}</p>
                                         )}
                                     </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Eye className="size-5" />
+                                        Modo Cardápio
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex items-start gap-3">
+                                        <Checkbox
+                                            id="menu_only"
+                                            checked={menuOnly}
+                                            onCheckedChange={(checked) => setMenuOnly(checked === true)}
+                                            className="mt-1"
+                                        />
+                                        <div className="space-y-1">
+                                            <Label htmlFor="menu_only" className="font-medium cursor-pointer">
+                                                Apenas cardápio
+                                            </Label>
+                                            <p className="text-sm text-muted-foreground">
+                                                Desativa carrinho e pedidos, exibindo apenas o cardápio
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {errors?.menu_only && (
+                                        <p className="mt-2 text-sm text-destructive">{errors.menu_only}</p>
+                                    )}
                                 </CardContent>
                             </Card>
 

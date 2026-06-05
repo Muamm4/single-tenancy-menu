@@ -3,7 +3,9 @@ import { ShoppingBag, User, ShoppingCart, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function BottomNav() {
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const appColors = (props as any).appColors as Record<string, string> | undefined;
+    const menuOnly = appColors?.menu_only === 'true';
     
     const navItems = [
         { 
@@ -12,18 +14,20 @@ export function BottomNav() {
             icon: ShoppingBag,
             active: url === '/' || url.startsWith('/menu') || url === route('menu')
         },
-        { 
-            name: 'Carrinho', 
-            href: route('cart'), 
-            icon: ShoppingCart,
-            active: url.startsWith('/cart')
-        },
-        { 
-            name: 'Pedidos', 
-            href: route('customer.orders'), 
-            icon: ClipboardList,
-            active: url.startsWith('/my-orders')
-        },
+        ...(menuOnly ? [] : [
+            { 
+                name: 'Carrinho', 
+                href: route('cart'), 
+                icon: ShoppingCart,
+                active: url.startsWith('/cart')
+            },
+            { 
+                name: 'Pedidos', 
+                href: route('customer.orders'), 
+                icon: ClipboardList,
+                active: url.startsWith('/my-orders')
+            },
+        ]),
         { 
             name: 'Conta', 
             href: route('profile.edit'), 

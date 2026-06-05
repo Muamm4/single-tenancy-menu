@@ -28,6 +28,7 @@ class AppearanceSettingsController extends Controller
             'header_background' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'header_foreground' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'restaurant_name' => ['nullable', 'string', 'max:255'],
+            'menu_only' => ['nullable', 'string', 'in:true,false'],
         ]);
 
         Setting::setGroup('appearance', $validated);

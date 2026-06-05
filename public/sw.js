@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cardapio-cache-v4';
+const CACHE_NAME = 'cardapio-cache-v5';
 const STATIC_ASSETS = [];
 
 self.addEventListener('install', (event) => {

@@ -17,6 +17,7 @@ class SettingsSeeder extends Seeder
             'header_background' => '#2C402E',
             'header_foreground' => '#ffffff',
             'restaurant_name' => 'Gameleira Esfiharia & Bistrô',
+            'menu_only' => 'false',
         ]);
     }
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
+import { Head, usePage, router } from '@inertiajs/react';
 import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, ShoppingBag, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,15 @@ export default function Cart() {
         addresses?: Address[];
         defaultAddress?: Address | null;
     }>();
+
+    const appColors = (props as any).appColors as Record<string, string> | undefined;
+    const menuOnly = appColors?.menu_only === 'true';
+
+    useEffect(() => {
+        if (menuOnly) {
+            router.visit(route('menu'));
+        }
+    }, [menuOnly]);
 
     const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
     const user = props.auth?.user;
