@@ -32,6 +32,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         price: product?.price || 0,
         promotional_price: product?.promotional_price || null as number | null,
         image: null as File | null,
+        remove_image: false,
         is_active: product?.is_active ?? true,
         sort_order: product?.sort_order || 0,
     });
@@ -132,6 +133,7 @@ const handleSubmit = (e: FormEvent) => {
                                         required
                                     />
                                     <InputError message={errors.price} />
+                                    <p className="text-xs text-muted-foreground">Informe o preço do produto</p>
                                 </div>
 
                                 <div className="grid gap-2">
@@ -159,6 +161,7 @@ const handleSubmit = (e: FormEvent) => {
                                         min="0"
                                     />
                                     <InputError message={errors.sort_order} />
+                                    <p className="text-xs text-muted-foreground">Quanto menor o número, mais para o início da lista</p>
                                 </div>
                             </div>
 
@@ -172,15 +175,28 @@ const handleSubmit = (e: FormEvent) => {
                                     ref={imageInputRef}
                                 />
                                 <InputError message={errors.image} />
-                                {product?.image && (
+                                {product?.image && !data.remove_image && (
                                     <div className="mt-2">
                                         <p className="text-sm text-muted-foreground mb-2">Imagem atual:</p>
-                                        <img
-                                            src={`/storage/${product.image}`}
-                                            alt={product.name}
-                                            className="size-24 rounded-lg object-cover"
-                                        />
+                                        <div className="flex items-start gap-4">
+                                            <img
+                                                src={`/storage/${product.image}`}
+                                                alt={product.name}
+                                                className="size-24 rounded-lg object-cover"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => setData('remove_image', true)}
+                                            >
+                                                Remover foto
+                                            </Button>
+                                        </div>
                                     </div>
+                                )}
+                                {data.remove_image && (
+                                    <p className="mt-2 text-sm text-destructive">Foto será removida ao salvar.</p>
                                 )}
                             </div>
 
