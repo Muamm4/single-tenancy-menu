@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Setting;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -34,7 +35,9 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'appColors' => fn () => Schema::hasTable('settings') ? Setting::getGroup('appearance') : [],
+            'appColors' => fn () => Schema::hasTable('settings')
+                ? Cache::remember('appearance_settings', 86400, fn () => Setting::getGroup('appearance'))
+                : [],
         ];
     }
 }

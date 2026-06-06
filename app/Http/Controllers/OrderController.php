@@ -27,8 +27,15 @@ class OrderController extends Controller
             $calculatedTotal = 0;
             $finalItems = [];
 
+            $productIds = collect($validated['items'])->pluck('id');
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
             foreach ($validated['items'] as $item) {
-                $product = Product::findOrFail($item['id']);
+                $product = $products->get($item['id']);
+
+                if (! $product) {
+                    continue;
+                }
 
                 $price = $product->promotional_price ?? $product->price;
                 $subtotal = $price * $item['quantity'];

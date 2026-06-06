@@ -20,7 +20,7 @@ class CustomerOrderController extends Controller
 
         $orders = Order::where('user_id', Auth::id())
             ->latest()
-            ->get();
+            ->paginate(20);
 
         return Inertia::render('customer/Orders', [
             'orders' => $orders

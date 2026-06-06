@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class AppearanceSettingsController extends Controller
@@ -32,6 +33,8 @@ class AppearanceSettingsController extends Controller
         ]);
 
         Setting::setGroup('appearance', $validated);
+
+        Cache::forget('appearance_settings');
 
         return redirect()->route('admin.settings.appearance')
             ->with('success', 'Cores atualizadas com sucesso!');
