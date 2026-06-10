@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    ...require __DIR__ . '/instance.php',
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
