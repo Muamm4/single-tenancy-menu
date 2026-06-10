@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/stores/cartStore';
 import { BottomNav } from '@/components/public/BottomNav';
+import { useToast, ToastProvider } from '@/components/ui/Toast';
 
 interface Address {
     id: number;
@@ -42,6 +43,7 @@ export default function Cart() {
     }, [menuOnly]);
 
     const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
+    const { addToast } = useToast();
     const user = props.auth?.user;
     const addresses = props.addresses || [];
     const defaultAddr = props.defaultAddress;
@@ -102,6 +104,7 @@ export default function Cart() {
 
     if (submitted) {
         return (
+            <ToastProvider>
             <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
                 <div className="max-w-sm">
                     <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
@@ -128,10 +131,12 @@ export default function Cart() {
                     </Button>
                 </div>
             </div>
+            </ToastProvider>
         );
     }
 
     return (
+        <ToastProvider>
         <div className="min-h-screen bg-background pb-24">
             <BottomNav />
             <Head title="Carrinho" />
@@ -225,7 +230,10 @@ export default function Cart() {
                                                     variant="ghost"
                                                     size="icon"
                                                     className="size-8 text-destructive"
-                                                    onClick={() => removeItem(itemKey)}
+                                                    onClick={() => {
+                                                        removeItem(itemKey);
+                                                        addToast(`${item.name} removido do carrinho`, 'error');
+                                                    }}
                                                 >
                                                     <Trash2 className="size-4" />
                                                 </Button>
@@ -329,5 +337,6 @@ export default function Cart() {
                 )}
             </main>
         </div>
+        </ToastProvider>
     );
 }

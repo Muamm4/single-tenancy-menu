@@ -207,11 +207,14 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                             <div className="flex items-center gap-3">
                                                 <div className="flex items-center gap-1 bg-background border rounded-lg p-1">
                                                     <button
-                                                        onClick={() =>
-                                                            item.quantity > 1
-                                                                ? updateQuantity(itemKey, item.quantity - 1)
-                                                                : removeItem(itemKey)
-                                                        }
+                                                        onClick={() => {
+                                                            if (item.quantity > 1) {
+                                                                updateQuantity(itemKey, item.quantity - 1);
+                                                            } else {
+                                                                removeItem(itemKey);
+                                                                addToast(`${item.name} removido do carrinho`, 'error');
+                                                            }
+                                                        }}
                                                         className="size-8 rounded-md flex items-center justify-center hover:bg-muted transition-colors"
                                                     >
                                                         <Minus size={16} />
@@ -227,7 +230,10 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                                     </button>
                                                 </div>
                                                 <button
-                                                    onClick={() => removeItem(itemKey)}
+                                                    onClick={() => {
+                                                        removeItem(itemKey);
+                                                        addToast(`${item.name} removido do carrinho`, 'error');
+                                                    }}
                                                     className="ml-auto size-8 rounded-md text-destructive flex items-center justify-center hover:bg-destructive/10 transition-colors"
                                                 >
                                                     <Trash2 size={16} />
