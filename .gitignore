@@ -28,3 +28,5 @@ frankenphp
 frankenphp-worker.php
 /database/database.sqlite
 /storage/logs/*.log
+public/manifest.json
+public/sw.js
