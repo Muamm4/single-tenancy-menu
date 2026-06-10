@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'appColors' => fn () => Schema::hasTable('settings')
-                ? Cache::remember('appearance_settings', 86400, fn () => Setting::getGroup('appearance'))
+                ? Cache::remember('appearance_settings_' . config('app.instance'), 86400, fn () => Setting::getGroup('appearance'))
                 : [],
         ];
     }
