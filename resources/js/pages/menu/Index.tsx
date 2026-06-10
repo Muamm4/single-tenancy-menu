@@ -66,7 +66,7 @@ export default function MenuIndex({ categories }: MenuIndexProps) {
         <ToastProvider>
             <Head title="Cardápio" />
             <div className="h-dvh flex flex-col overflow-hidden bg-background">
-                <header className="p-4 shrink-0 pt-[calc(var(--safe-top)+1rem)]" style={{backgroundColor: 'var(--header-background)', color: 'var(--header-foreground)'}}>
+                <header className="p-4 shrink-0 pt-[calc(var(--safe-top)+1rem)]" style={{ backgroundColor: 'var(--header-background)', color: 'var(--header-foreground)' }}>
                     <div className="flex items-center justify-between max-w-6xl mx-auto">
                         <div className="flex-1" />
                         <div className="text-center">
@@ -100,11 +100,10 @@ export default function MenuIndex({ categories }: MenuIndexProps) {
                             <button
                                 key={category.id}
                                 onClick={() => scrollToCategory(category.slug)}
-                                className={`px-3 py-1 rounded-full text-xs font-medium transition-all border ${
-                                    activeCategory === category.slug 
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-all border ${activeCategory === category.slug
+                                    ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                                     : 'bg-muted text-muted-foreground border-border hover:bg-muted/80'
-                                }`}
+                                    }`}
                             >
                                 {category.name}
                             </button>
@@ -112,12 +111,12 @@ export default function MenuIndex({ categories }: MenuIndexProps) {
                     </div>
                 </nav>
 
-                <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-8 mb-24 space-y-12 pb-[calc(var(--safe-bottom)+6rem)]">
+                <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-8 mb-16 space-y-12 pb-[calc(var(--safe-bottom)+7rem)]">
                     {categories.map((category) => (
                         <section key={category.id} id={category.slug} className="scroll-mt-24">
                             <h2 className="text-2xl font-semibold mb-8 border-b pb-2">{category.name}</h2>
                             {category.description && <p className="text-muted-foreground mb-8">{category.description}</p>}
-                            
+
                             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' : 'space-y-3'}>
                                 {category.products.map((product) => (
                                     <ProductCard key={product.id} product={product} variant={viewMode} />

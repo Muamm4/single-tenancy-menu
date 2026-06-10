@@ -27,7 +27,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('address')->findOrFail($id);
 
         return Inertia::render('admin/orders/Show', [
             'order' => $order,

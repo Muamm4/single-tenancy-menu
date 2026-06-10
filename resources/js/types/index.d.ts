@@ -122,8 +122,20 @@ export interface Order {
     status: 'pending' | 'accepted' | 'rejected' | 'preparing' | 'ready';
     whatsapp_sent: boolean;
     notes: string | null;
+    address_id?: number | null;
+    address?: Address | null;
     created_at: string;
     updated_at?: string;
+}
+
+export interface Address {
+    id: number;
+    street: string;
+    number: string;
+    neighborhood: string;
+    city: string;
+    zip_code: string;
+    is_default: boolean;
 }
 
 export interface PaginationLink {

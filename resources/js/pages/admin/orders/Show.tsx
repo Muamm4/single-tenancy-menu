@@ -1,6 +1,6 @@
 import { type BreadcrumbItem, type Order, type CartItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Check, X, MessageSquare, Package, User, Phone, Clock, DollarSign, UtensilsCrossed } from 'lucide-react';
+import { ArrowLeft, Check, X, MessageSquare, Package, User, Phone, Clock, DollarSign, UtensilsCrossed, FileText, MapPin } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
@@ -158,22 +158,31 @@ export default function OrderShow({ order }: OrderShowProps) {
                         <div className="space-y-3 md:hidden">
                             {order.items.map((item: CartItem) => (
                                 <div key={item.id} className="rounded-lg border p-4">
-                                    <p className="font-medium">{formatItemName(item)}</p>
-                                    <div className="mt-3 space-y-1.5 text-sm">
-                                        <div className="flex justify-between text-muted-foreground">
-                                            <span>Quantidade</span>
-                                            <span className="font-medium text-foreground">{item.quantity}</span>
-                                        </div>
-                                        <div className="flex justify-between text-muted-foreground">
-                                            <span>Preço Unit.</span>
-                                            <span className="font-medium text-foreground">{formatPrice(getItemUnitPrice(item))}</span>
-                                        </div>
-                                        <div className="flex justify-between border-t pt-1.5 text-muted-foreground">
-                                            <span>Subtotal</span>
-                                            <span className="font-semibold text-foreground">{formatPrice(getItemSubtotal(item))}</span>
+                                        <p className="font-medium">{formatItemName(item)}</p>
+                                        {item.addons && item.addons.length > 0 && (
+                                            <div className="mt-2 space-y-0.5">
+                                                {item.addons.map((addon) => (
+                                                    <span key={addon.id} className="block text-xs text-muted-foreground ml-1">
+                                                        + {addon.name} {addon.price > 0 ? `(${formatPrice(addon.price)})` : '(Grátis)'}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        <div className="mt-3 space-y-1.5 text-sm">
+                                            <div className="flex justify-between text-muted-foreground">
+                                                <span>Quantidade</span>
+                                                <span className="font-medium text-foreground">{item.quantity}</span>
+                                            </div>
+                                            <div className="flex justify-between text-muted-foreground">
+                                                <span>Preço Unit.</span>
+                                                <span className="font-medium text-foreground">{formatPrice(getItemUnitPrice(item))}</span>
+                                            </div>
+                                            <div className="flex justify-between border-t pt-1.5 text-muted-foreground">
+                                                <span>Subtotal</span>
+                                                <span className="font-semibold text-foreground">{formatPrice(getItemSubtotal(item))}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                             ))}
                             <div className="rounded-lg border bg-muted/50 p-4">
                                 <div className="flex justify-between font-bold">
@@ -197,7 +206,18 @@ export default function OrderShow({ order }: OrderShowProps) {
                                 <tbody>
                                     {order.items.map((item: CartItem) => (
                                         <tr key={item.id} className="border-b last:border-0">
-                                            <td className="p-3 font-medium">{formatItemName(item)}</td>
+                                            <td className="p-3">
+                                                <p className="font-medium">{formatItemName(item)}</p>
+                                                {item.addons && item.addons.length > 0 && (
+                                                    <div className="mt-1 space-y-0.5">
+                                                        {item.addons.map((addon) => (
+                                                            <span key={addon.id} className="block text-xs text-muted-foreground">
+                                                                + {addon.name} {addon.price > 0 ? `(${formatPrice(addon.price)})` : '(Grátis)'}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </td>
                                             <td className="p-3 text-center">{item.quantity}</td>
                                             <td className="p-3 text-right">{formatPrice(getItemUnitPrice(item))}</td>
                                             <td className="p-3 text-right font-medium">
@@ -220,6 +240,38 @@ export default function OrderShow({ order }: OrderShowProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {order.notes && (
+                    <Card className="mt-6">
+                        <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                            <FileText className="size-5 text-muted-foreground" />
+                            <CardTitle className="text-base">Observações</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm whitespace-pre-wrap">{order.notes}</p>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {order.address && (
+                    <Card className="mt-6">
+                        <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                            <MapPin className="size-5 text-muted-foreground" />
+                            <CardTitle className="text-base">Endereço de Entrega</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm">
+                                {order.address.street}, {order.address.number}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                {order.address.neighborhood}, {order.address.city}
+                            </p>
+                            {order.address.zip_code && (
+                                <p className="text-sm text-muted-foreground">CEP: {order.address.zip_code}</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
                 {order.status === 'pending' && (
                     <div className="flex flex-col gap-3 sm:flex-row sm:justify-end mt-8">

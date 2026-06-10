@@ -113,7 +113,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     </div>
                 </header>
 
-                <main className="flex-1 max-w-2xl mx-auto w-full px-4 pb-32">
+                <main className="flex-1 max-w-2xl mx-auto w-full px-4 pb-32 mb-16">
                     {product.image && (
                         <div className="aspect-video bg-muted rounded-lg overflow-hidden mt-4 mb-6">
                             <img
@@ -124,7 +124,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                         </div>
                     )}
 
-                    <div className="mb-6">
+                    <div className="mb-6 mt-4">
                         <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
                         {product.description && (
                             <p className="text-muted-foreground">{product.description}</p>
@@ -186,13 +186,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                                                 return (
                                                     <label
                                                         key={addon.id}
-                                                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
-                                                            isSelected
-                                                                ? 'border-primary bg-primary/5'
-                                                                : isMaxed
+                                                        className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${isSelected
+                                                            ? 'border-primary bg-primary/5'
+                                                            : isMaxed
                                                                 ? 'opacity-50 cursor-not-allowed'
                                                                 : 'hover:bg-muted/50'
-                                                        }`}
+                                                            }`}
                                                         onClick={() => {
                                                             if (isMaxed) return;
                                                             handleToggleAddon(category.id, addon, !isSelected);
@@ -200,11 +199,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                                                     >
                                                         {category.max_select === 1 ? (
                                                             <div
-                                                                className={`flex size-4 shrink-0 items-center justify-center rounded-full border ${
-                                                                    isSelected
-                                                                        ? 'border-primary bg-primary'
-                                                                        : 'border-input'
-                                                                }`}
+                                                                className={`flex size-4 shrink-0 items-center justify-center rounded-full border ${isSelected
+                                                                    ? 'border-primary bg-primary'
+                                                                    : 'border-input'
+                                                                    }`}
                                                             >
                                                                 {isSelected && (
                                                                     <Check className="size-3 text-primary-foreground" />
