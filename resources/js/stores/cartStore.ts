@@ -97,39 +97,6 @@ export const useCartStore = create<CartState>()(
                     return sum + (item.price + addonTotal) * item.quantity;
                 }, 0),
         }),
-        {
-            name: 'cart-storage',
-            version: 2,
-            migrate: (persistedState: any, version: number) => {
-                if (version === 0) {
-                    const items = persistedState?.state?.items ?? [];
-                    return {
-                        ...persistedState,
-                        state: {
-                            ...persistedState.state,
-                            items: items.map((item: any) => ({
-                                ...item,
-                                price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
-                                _key: generateItemKey(item.id, item.addons || []),
-                            })),
-                        },
-                    };
-                }
-                if (version === 1) {
-                    const items = persistedState?.state?.items ?? [];
-                    return {
-                        ...persistedState,
-                        state: {
-                            ...persistedState.state,
-                            items: items.map((item: any) => ({
-                                ...item,
-                                _key: generateItemKey(item.id, item.addons || []),
-                            })),
-                        },
-                    };
-                }
-                return persistedState;
-            },
-        }
+        { name: 'cart-storage-v2' }
     )
 );

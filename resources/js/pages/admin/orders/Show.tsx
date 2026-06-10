@@ -1,6 +1,6 @@
 import { type BreadcrumbItem, type Order, type CartItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Check, X, MessageSquare, Package, User, Phone, Clock, DollarSign, UtensilsCrossed, FileText, MapPin } from 'lucide-react';
+import { ArrowLeft, Check, X, MessageSquare, Package, User, Clock, DollarSign, UtensilsCrossed, FileText, MapPin } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
