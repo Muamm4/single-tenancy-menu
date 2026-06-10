@@ -3,7 +3,7 @@ import AppLogoIcon from './app-logo-icon';
 
 export default function AppLogo() {
     const appColors = (usePage().props as Record<string, unknown>).appColors as Record<string, string> | undefined;
-    const title = appColors?.restaurant_name || 'Gameleira Esfiharia';
+    const title = appColors?.restaurant_name || 'Meu Restaurante';
 
     return (
         <div className="flex items-center gap-3">
