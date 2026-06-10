@@ -22,6 +22,8 @@ class UpdateProductRequest extends FormRequest
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer',
+            'addon_category_ids' => 'nullable|array',
+            'addon_category_ids.*' => 'exists:addon_categories,id',
         ];
     }
 }

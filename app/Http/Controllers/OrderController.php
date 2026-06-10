@@ -20,6 +20,10 @@ class OrderController extends Controller
             'items' => 'required|array',
             'items.*.id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'items.*.addons' => 'nullable|array',
+            'items.*.addons.*.id' => 'exists:addons,id',
+            'items.*.addons.*.name' => 'required|string',
+            'items.*.addons.*.price' => 'required|numeric|min:0',
             'total' => 'required|numeric',
             'address_id' => 'nullable|exists:addresses,id',
         ]);
@@ -42,11 +46,24 @@ class OrderController extends Controller
                 $subtotal = $price * $item['quantity'];
                 $calculatedTotal += $subtotal;
 
+                $addonDetails = [];
+                if (!empty($item['addons'])) {
+                    foreach ($item['addons'] as $addon) {
+                        $addonDetails[] = [
+                            'id' => $addon['id'],
+                            'name' => $addon['name'],
+                            'price' => (float) $addon['price'],
+                        ];
+                        $calculatedTotal += (float) $addon['price'] * $item['quantity'];
+                    }
+                }
+
                 $finalItems[] = [
                     'name' => $product->name,
                     'price' => $price,
                     'quantity' => $item['quantity'],
                     'subtotal' => $subtotal,
+                    'addons' => $addonDetails,
                 ];
             }
 
@@ -67,7 +84,17 @@ class OrderController extends Controller
 
             $whatsappMessage = "Olá! Gostaria de fazer um pedido:\n\n";
             foreach ($finalItems as $item) {
-                $whatsappMessage .= "- {$item['quantity']}x {$item['name']} (R$ ".number_format($item['price'], 2, ',', '.').")\n";
+                $whatsappMessage .= "- {$item['quantity']}x {$item['name']} (R$ ".number_format($item['subtotal'], 2, ',', '.').")\n";
+                if (!empty($item['addons'])) {
+                    foreach ($item['addons'] as $addon) {
+                        $messageAddonPrice = number_format($addon['price'], 2, ',', '.');
+                        if ($addon['price'] > 0) {
+                            $whatsappMessage .= "    + {$addon['name']} (+R\$ {$messageAddonPrice})\n";
+                        } else {
+                            $whatsappMessage .= "    + {$addon['name']}\n";
+                        }
+                    }
+                }
             }
             $whatsappMessage .= "\nTotal: R$ ".number_format($calculatedTotal, 2, ',', '.');
             $whatsappMessage .= "\n\nNome: {$order->customer_name}\nTelefone: {$order->customer_phone}";

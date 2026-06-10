@@ -1,0 +1,12 @@
+{
+  "active_plan": "/home/muril/single-tenancy-menu/.sisyphus/plans/white-label-refactor.md",
+  "started_at": "2026-06-10T17:05:31.487Z",
+  "session_ids": [
+    "ses_14d80f2cfffeck7f1sGLX8hEJM"
+  ],
+  "session_origins": {
+    "ses_14d80f2cfffeck7f1sGLX8hEJM": "direct"
+  },
+  "plan_name": "white-label-refactor",
+  "agent": "atlas"
+}

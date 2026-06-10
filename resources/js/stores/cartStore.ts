@@ -2,68 +2,104 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem, Product } from '@/types';
 
+interface AddonInput {
+    id: number;
+    name: string;
+    price: number;
+}
+
 interface CartState {
     items: CartItem[];
-    addItem: (product: Product, quantity?: number) => void;
-    removeItem: (productId: number) => void;
-    updateQuantity: (productId: number, quantity: number) => void;
+    addItem: (product: Product, quantity?: number, addons?: AddonInput[]) => void;
+    removeItem: (key: string) => void;
+    updateQuantity: (key: string, quantity: number) => void;
     clearCart: () => void;
     totalItems: () => number;
     totalPrice: () => number;
+}
+
+function generateItemKey(productId: number, addons: AddonInput[] = []): string {
+    const addonIds = addons
+        .map((a) => a.id)
+        .sort((a, b) => a - b)
+        .join(',');
+    return `${productId}_${addonIds}`;
+}
+
+function getItemKey(item: CartItem): string {
+    if (item._key) return item._key;
+    const addonIds = (item.addons || [])
+        .map((a) => a.id)
+        .sort((a, b) => a - b)
+        .join(',');
+    return `${item.id}_${addonIds}`;
 }
 
 export const useCartStore = create<CartState>()(
     persist(
         (set, get) => ({
             items: [],
-            addItem: (product, quantity = 1) => {
+            addItem: (product, quantity = 1, addons = []) => {
                 const price = product.promotional_price ?? product.price;
+                const key = generateItemKey(product.id, addons);
+
                 set((state) => {
-                    const existingItem = state.items.find((item) => item.id === product.id);
+                    const existingItem = state.items.find((item) => getItemKey(item) === key);
+
                     if (existingItem) {
                         return {
                             items: state.items.map((item) =>
-                                item.id === product.id
+                                getItemKey(item) === key
                                     ? { ...item, quantity: item.quantity + quantity }
                                     : item
                             ),
                         };
                     }
+
                     return {
                         items: [
                             ...state.items,
                             {
                                 id: product.id,
+                                _key: key,
                                 name: product.name,
                                 price,
                                 quantity,
                                 image: product.image,
                                 category_name: product.category?.name,
+                                addons: addons.map((a) => ({
+                                    id: a.id,
+                                    name: a.name,
+                                    price: a.price,
+                                })),
                             },
                         ],
                     };
                 });
             },
-            removeItem: (productId) => {
+            removeItem: (key) => {
                 set((state) => ({
-                    items: state.items.filter((item) => item.id !== productId),
+                    items: state.items.filter((item) => getItemKey(item) !== key),
                 }));
             },
-            updateQuantity: (productId, quantity) => {
+            updateQuantity: (key, quantity) => {
                 set((state) => ({
                     items: state.items.map((item) =>
-                        item.id === productId ? { ...item, quantity } : item
+                        getItemKey(item) === key ? { ...item, quantity } : item
                     ),
                 }));
             },
             clearCart: () => set({ items: [] }),
             totalItems: () => get().items.reduce((sum, item) => sum + item.quantity, 0),
             totalPrice: () =>
-                get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+                get().items.reduce((sum, item) => {
+                    const addonTotal = (item.addons || []).reduce((s, a) => s + a.price, 0);
+                    return sum + (item.price + addonTotal) * item.quantity;
+                }, 0),
         }),
         {
             name: 'cart-storage',
-            version: 1,
+            version: 2,
             migrate: (persistedState: any, version: number) => {
                 if (version === 0) {
                     const items = persistedState?.state?.items ?? [];
@@ -74,6 +110,20 @@ export const useCartStore = create<CartState>()(
                             items: items.map((item: any) => ({
                                 ...item,
                                 price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+                                _key: generateItemKey(item.id, item.addons || []),
+                            })),
+                        },
+                    };
+                }
+                if (version === 1) {
+                    const items = persistedState?.state?.items ?? [];
+                    return {
+                        ...persistedState,
+                        state: {
+                            ...persistedState.state,
+                            items: items.map((item: any) => ({
+                                ...item,
+                                _key: generateItemKey(item.id, item.addons || []),
                             })),
                         },
                     };

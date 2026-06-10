@@ -49,6 +49,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 name: item.name,
                 price: item.price,
                 quantity: item.quantity,
+                addons: item.addons || [],
             })),
             total: totalPrice(),
         };
@@ -161,9 +162,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                     ) : (
                         <>
                             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                                {items.map((item) => (
+                                {items.map((item) => {
+                                    const itemKey = item._key || `${item.id}_`;
+                                    return (
                                     <div
-                                        key={item.id}
+                                        key={itemKey}
                                         className="flex gap-4 p-4 rounded-xl bg-muted/40 border border-border/50"
                                     >
                                         <div className="size-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
@@ -183,6 +186,21 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                             <h4 className="font-semibold text-base truncate">
                                                 {item.name}
                                             </h4>
+                                            {item.addons && item.addons.length > 0 && (
+                                                <div className="mt-0.5 space-y-0.5 mb-1">
+                                                    {item.addons.map((addon) => (
+                                                        <span
+                                                            key={addon.id}
+                                                            className="text-xs text-muted-foreground block ml-1"
+                                                        >
+                                                            + {addon.name}{' '}
+                                                            {addon.price > 0
+                                                                ? `(+${formatPrice(addon.price)})`
+                                                                : '(Grátis)'}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                             <p className="text-sm font-bold text-primary mb-3">
                                                 {formatPrice(item.price)}
                                             </p>
@@ -191,8 +209,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                                     <button
                                                         onClick={() =>
                                                             item.quantity > 1
-                                                                ? updateQuantity(item.id, item.quantity - 1)
-                                                                : removeItem(item.id)
+                                                                ? updateQuantity(itemKey, item.quantity - 1)
+                                                                : removeItem(itemKey)
                                                         }
                                                         className="size-8 rounded-md flex items-center justify-center hover:bg-muted transition-colors"
                                                     >
@@ -202,14 +220,14 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                                         {item.quantity}
                                                     </span>
                                                     <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        onClick={() => updateQuantity(itemKey, item.quantity + 1)}
                                                         className="size-8 rounded-md flex items-center justify-center hover:bg-muted transition-colors"
                                                     >
                                                         <Plus size={16} />
                                                     </button>
                                                 </div>
                                                 <button
-                                                    onClick={() => removeItem(item.id)}
+                                                    onClick={() => removeItem(itemKey)}
                                                     className="ml-auto size-8 rounded-md text-destructive flex items-center justify-center hover:bg-destructive/10 transition-colors"
                                                 >
                                                     <Trash2 size={16} />
@@ -220,7 +238,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                             {formatPrice(item.price * item.quantity)}
                                         </div>
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                                 <div className="p-6 border-t bg-background space-y-6 pb-10">

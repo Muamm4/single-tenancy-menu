@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\AddonCategory;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -39,9 +40,11 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::orderBy('name')->get();
+        $addonCategories = AddonCategory::active()->get();
 
         return Inertia::render('admin/products/Form', [
             'categories' => $categories,
+            'addonCategories' => $addonCategories,
         ]);
     }
 
@@ -59,16 +62,20 @@ class ProductController extends Controller
             : Product::where('category_id', $data['category_id'])->max('sort_order') + 1;
 
         if ($request->input('sort_order')) {
-            DB::transaction(function () use ($data, $sortOrder) {
+            $product = DB::transaction(function () use ($data, $sortOrder) {
                 Product::where('category_id', $data['category_id'])
                     ->where('sort_order', '>=', $sortOrder)
                     ->increment('sort_order');
 
-                Product::create(array_merge($data, ['sort_order' => $sortOrder]));
+                return Product::create(array_merge($data, ['sort_order' => $sortOrder]));
             });
         } else {
             $data['sort_order'] = $sortOrder;
-            Product::create($data);
+            $product = Product::create($data);
+        }
+
+        if ($request->has('addon_category_ids')) {
+            $product->addonCategories()->sync($request->addon_category_ids);
         }
 
         return redirect()->route('admin.products.index')
@@ -78,10 +85,13 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();
+        $addonCategories = AddonCategory::active()->get();
 
         return Inertia::render('admin/products/Form', [
             'product' => $product,
             'categories' => $categories,
+            'addonCategories' => $addonCategories,
+            'selectedAddonCategoryIds' => $product->addonCategories->pluck('id')->toArray(),
         ]);
     }
 
@@ -111,6 +121,12 @@ class ProductController extends Controller
         $this->reorderProducts($product, $oldSortOrder, $newSortOrder, $oldCategoryId, $newCategoryId);
 
         $product->update($data);
+
+        if ($request->has('addon_category_ids')) {
+            $product->addonCategories()->sync($request->addon_category_ids);
+        } else {
+            $product->addonCategories()->sync([]);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produto atualizado com sucesso.');

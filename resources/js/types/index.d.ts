@@ -43,6 +43,28 @@ export interface User {
     [key: string]: unknown;
 }
 
+export interface AddonCategory {
+    id: number;
+    name: string;
+    min_select: number;
+    max_select: number;
+    is_active: boolean;
+    sort_order: number;
+    addons?: Addon[];
+    pivot?: { product_id: number; addon_category_id: number };
+}
+
+export interface Addon {
+    id: number;
+    addon_category_id: number;
+    name: string;
+    price: number;
+    formatted_price?: string;
+    is_active: boolean;
+    sort_order: number;
+    addon_category?: AddonCategory;
+}
+
 export interface Category {
     id: number;
     name: string;
@@ -71,6 +93,7 @@ export interface Product {
     is_active: boolean;
     sort_order: number;
     category?: Category;
+    addon_categories?: AddonCategory[];
     created_at?: string;
     updated_at?: string;
 }
@@ -85,6 +108,8 @@ export interface CartItem {
     unit_price?: number;
     subtotal?: number;
     product_name?: string;
+    addons?: { id: number; name: string; price: number }[];
+    _key?: string;
 }
 
 export interface Order {

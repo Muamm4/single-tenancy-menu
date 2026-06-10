@@ -1,12 +1,13 @@
-import { type BreadcrumbItem, type Category, type Product } from '@/types';
+import { type AddonCategory, type BreadcrumbItem, type Category, type Product } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEvent, useRef } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
     Select,
@@ -20,10 +21,14 @@ import InputError from '@/components/input-error';
 interface ProductFormProps {
     product?: Product;
     categories: Category[];
+    addonCategories?: AddonCategory[];
 }
 
-export default function ProductForm({ product, categories }: ProductFormProps) {
+export default function ProductForm({ product, categories, addonCategories = [] }: ProductFormProps) {
     const isEditing = !!product;
+
+    const initialAddonIds = product?.addon_categories?.map((c) => c.id) || [];
+    const [hasAddons, setHasAddons] = useState(initialAddonIds.length > 0);
 
     const { data, setData, post, put, errors, processing } = useForm({
         name: product?.name || '',
@@ -35,6 +40,7 @@ export default function ProductForm({ product, categories }: ProductFormProps) {
         remove_image: false,
         is_active: product?.is_active ?? true,
         sort_order: product?.sort_order || 0,
+        addon_category_ids: initialAddonIds,
     });
 
     const imageInputRef = useRef<HTMLInputElement>(null);
@@ -209,6 +215,65 @@ const handleSubmit = (e: FormEvent) => {
                                 <Label htmlFor="is_active" className="font-normal">
                                     Produto ativo
                                 </Label>
+                            </div>
+
+                            <div className="space-y-4 border-t pt-6">
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        id="has_addons"
+                                        checked={hasAddons}
+                                        onCheckedChange={setHasAddons}
+                                    />
+                                    <Label htmlFor="has_addons">Tem adicional?</Label>
+                                </div>
+
+                                {hasAddons && (
+                                    <div className="ml-6 space-y-2">
+                                        <Label>Categorias de adicionais disponíveis</Label>
+                                        {addonCategories.length === 0 ? (
+                                            <p className="text-sm text-muted-foreground">
+                                                Nenhuma categoria de adicional cadastrada.{' '}
+                                                <Link href={route('admin.addon-categories.create')} className="underline">
+                                                    Criar categoria
+                                                </Link>
+                                            </p>
+                                        ) : (
+                                            <div className="grid gap-2">
+                                                {addonCategories.map((cat) => (
+                                                    <label
+                                                        key={cat.id}
+                                                        className="flex items-center gap-2 rounded-lg border p-3 cursor-pointer hover:bg-accent"
+                                                    >
+                                                        <Checkbox
+                                                            checked={data.addon_category_ids?.includes(cat.id)}
+                                                            onCheckedChange={(checked) => {
+                                                                const current = data.addon_category_ids || [];
+                                                                if (checked) {
+                                                                    setData('addon_category_ids', [...current, cat.id]);
+                                                                } else {
+                                                                    setData('addon_category_ids', current.filter((id) => id !== cat.id));
+                                                                }
+                                                            }}
+                                                        />
+                                                        <div>
+                                                            <span className="font-medium">{cat.name}</span>
+                                                            {cat.min_select > 0 && (
+                                                                <span className="text-xs text-muted-foreground ml-2">
+                                                                    Mín: {cat.min_select}
+                                                                </span>
+                                                            )}
+                                                            {cat.max_select > 0 && (
+                                                                <span className="text-xs text-muted-foreground ml-2">
+                                                                    Máx: {cat.max_select}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-4">

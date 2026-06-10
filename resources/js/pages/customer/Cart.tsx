@@ -67,6 +67,7 @@ export default function Cart() {
                 items: items.map(item => ({
                     id: item.id,
                     quantity: item.quantity,
+                    addons: item.addons || [],
                 })),
                 total: totalPrice(),
             };
@@ -159,61 +160,79 @@ export default function Cart() {
                 ) : (
                     <div className="max-w-lg mx-auto space-y-6">
                         <div className="space-y-3">
-                            {items.map((item) => (
-                                <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl border bg-card">
-                                    {item.image ? (
-                                        <img
-                                            src={`/storage/${item.image}`}
-                                            alt={item.name}
-                                            className="size-16 rounded-lg object-cover"
-                                        />
-                                    ) : (
-                                        <div className="size-16 rounded-lg bg-muted flex items-center justify-center">
-                                            <ShoppingCart className="size-6 text-muted-foreground/40" />
+                                    {items.map((item) => {
+                                        const itemKey = item._key || `${item.id}_`;
+                                        return (
+                                        <div key={itemKey} className="flex items-center gap-4 p-4 rounded-xl border bg-card">
+                                            {item.image ? (
+                                                <img
+                                                    src={`/storage/${item.image}`}
+                                                    alt={item.name}
+                                                    className="size-16 rounded-lg object-cover"
+                                                />
+                                            ) : (
+                                                <div className="size-16 rounded-lg bg-muted flex items-center justify-center">
+                                                    <ShoppingCart className="size-6 text-muted-foreground/40" />
+                                                </div>
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium text-sm leading-tight">{item.name}</p>
+                                                {item.category_name && (
+                                                    <p className="text-[11px] text-muted-foreground/60 mt-0.5">
+                                                        {item.category_name}
+                                                    </p>
+                                                )}
+                                                {item.addons && item.addons.length > 0 && (
+                                                    <div className="mt-1 space-y-0.5">
+                                                        {item.addons.map((addon) => (
+                                                            <span
+                                                                key={addon.id}
+                                                                className="text-xs text-muted-foreground block ml-2"
+                                                            >
+                                                                + {addon.name}{' '}
+                                                                {addon.price > 0
+                                                                    ? `(+${formatPrice(addon.price)})`
+                                                                    : '(Grátis)'}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                <p className="text-sm text-primary font-semibold mt-1">
+                                                    {formatPrice(item.price)}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="size-8"
+                                                    onClick={() => updateQuantity(itemKey, Math.max(1, item.quantity - 1))}
+                                                >
+                                                    <Minus className="size-4" />
+                                                </Button>
+                                                <span className="w-8 text-center font-medium text-sm">
+                                                    {item.quantity}
+                                                </span>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    className="size-8"
+                                                    onClick={() => updateQuantity(itemKey, item.quantity + 1)}
+                                                >
+                                                    <Plus className="size-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-8 text-destructive"
+                                                    onClick={() => removeItem(itemKey)}
+                                                >
+                                                    <Trash2 className="size-4" />
+                                                </Button>
+                                            </div>
                                         </div>
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm leading-tight">{item.name}</p>
-                                        {item.category_name && (
-                                            <p className="text-[11px] text-muted-foreground/60 mt-0.5">
-                                                {item.category_name}
-                                            </p>
-                                        )}
-                                        <p className="text-sm text-primary font-semibold mt-1">
-                                            {formatPrice(item.price)}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="size-8"
-                                            onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                                        >
-                                            <Minus className="size-4" />
-                                        </Button>
-                                        <span className="w-8 text-center font-medium text-sm">
-                                            {item.quantity}
-                                        </span>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="size-8"
-                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                        >
-                                            <Plus className="size-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="size-8 text-destructive"
-                                            onClick={() => removeItem(item.id)}
-                                        >
-                                            <Trash2 className="size-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+                                        );
+                                    })}
                         </div>
 
                         <div className="flex justify-between items-center p-4 rounded-xl bg-muted/50">
