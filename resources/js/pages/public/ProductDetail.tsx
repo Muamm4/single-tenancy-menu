@@ -184,7 +184,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                                                     (selectedAddons[category.id]?.length || 0) >= category.max_select;
 
                                                 return (
-                                                    <label
+                                                    <div
                                                         key={addon.id}
                                                         className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${isSelected
                                                             ? 'border-primary bg-primary/5'
@@ -212,16 +212,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                                                             <Checkbox
                                                                 checked={isSelected}
                                                                 disabled={isMaxed}
-                                                                onCheckedChange={() =>
-                                                                    handleToggleAddon(category.id, addon, !isSelected)
-                                                                }
                                                             />
                                                         )}
                                                         <span className="flex-1 text-sm">{addon.name}</span>
                                                         <span className="text-sm font-medium">
                                                             {addon.price > 0 ? formatPrice(addon.price) : 'Grátis'}
                                                         </span>
-                                                    </label>
+                                                    </div>
                                                 );
                                             })}
                                     </div>
