@@ -1,111 +1,106 @@
-# 🍕 Cardápio Digital Whitelabel
+# Cardápio Digital
 
-Um sistema moderno de cardápio online e gestão de pedidos via WhatsApp, desenvolvido com uma arquitetura escalável e design focado em conversão. Este projeto foi concebido como um **Whitelabel**, permitindo que seja facilmente adaptado para qualquer restaurante, pizzaria ou lanchonete.
+Sistema white-label de cardápio digital com gestão de pedidos via WhatsApp e painel administrativo.
 
-## 🚀 Visão Geral
+## Arquitetura
 
-O sistema oferece uma experiência fluida para o cliente final (Mobile-First) e um painel administrativo robusto para o lojista gerenciar seu negócio em tempo real.
+- **Laravel 13** com **Inertia.js** + **React** (TSX)
+- **PostgreSQL** para dados, **Redis** para cache e sessão
+- **FrankenPHP / Octane** para servir a aplicação
+- **White-label**: cada restaurante é uma instância independente com seu próprio ambiente
 
-### 🌟 Principais Funcionalidades
+## Funcionalidades
 
-#### 📱 Para o Cliente (Frontend)
-- **Cardápio Digital**: Navegação intuitiva por categorias de produtos.
-- **Experiência Mobile-First**: Interface otimizada para smartphones, simulando a experiência de um app nativo.
-- **Carrinho Inteligente**: Adição rápida de itens, ajuste de quantidades e persistência de dados.
-- **Checkout via WhatsApp**: Geração automática de mensagem estruturada com todos os itens, quantidades e total, enviada diretamente para o WhatsApp do restaurante.
-- **Suporte a Promoções**: Destaque visual para produtos em oferta.
+### Para o cliente (frontend público)
+- Cardápio digital com navegação por categorias
+- Busca de produtos em tempo real
+- Carrinho de compras com Zustand
+- Checkout via link do WhatsApp
+- Modo "apenas cardápio" (desativa carrinho)
+- Tema escuro/claro
+- PWA (instalável como app)
 
-#### 🛠️ Para o Administrador (Painel Admin)
-- **Gestão de Categorias**: CRUD completo de categorias com controle de ordem de exibição e status de ativação.
-- **Gestão de Produtos**: Controle total de produtos, incluindo upload de imagens, preços, preços promocionais e descrições.
-- **Gestão de Pedidos**: Visualização de todos os pedidos recebidos, com a possibilidade de aceitar ou recusar, mantendo o histórico de vendas.
-- **Dashboard de Métricas**: Visão geral rápida do volume de categorias, produtos e pedidos.
+### Para o administrador (painel admin)
+- CRUD de categorias com ordenação e ativação
+- CRUD de produtos com upload de imagens, preços e promoções
+- Gestão de pedidos com aceitação/recusa e histórico
+- Dashboard com métricas de categorias, produtos e pedidos
 
----
-
-## 📸 Screenshots
+## Screenshots
 
 | Cardápio Público | Painel Administrativo | Carrinho de Compras |
-| :---: | :---: | :---: |
+|:---:|:---:|:---:|
 | ![Cardápio Público](./screenshots/public-menu.png) | ![Painel Admin](./screenshots/admin-dashboard.png) | ![Carrinho](./screenshots/cart-drawer.png) |
 
 | Gestão de Produtos | Detalhes do Pedido | Fluxo de Checkout |
-| :---: | :---: | :---: |
+|:---:|:---:|:---:|
 | ![Produtos](./screenshots/admin-products.png) | ![Pedido](./screenshots/admin-order-detail.png) | ![Checkout](./screenshots/checkout-flow.png) |
 
----
----
+## Requisitos
 
-## 🛠️ Tecnologias Utilizadas
+- PHP 8.3+
+- PostgreSQL 15+
+- Redis 7+
+- Composer 2+
+- Node.js 22+
 
-O projeto utiliza o que há de mais moderno no ecossistema PHP e JavaScript:
+## Criando uma nova instância
 
-- **Backend**: [Laravel 13](https://laravel.com) (Framework PHP)
-- **Frontend**: [React](https://react.dev) com [Inertia.js](https://inertiajs.com) (Single Page App experience)
-- **Estilização**: [Tailwind CSS](https://tailwindcss.com) + [Shadcn UI](https://ui.shadcn.com)
-- **Estado**: [Zustand](https://zustand-demo.pmnd.rs/) (Gerenciamento de estado leve e rápido)
-- **Banco de Dados**: SQLite (Simplicidade e portabilidade)
-- **Ícones**: [Lucide React](https://lucide.dev)
+1. Clone o repositório:
 
----
-
-## ⚙️ Instalação e Configuração
-
-### Pré-requisitos
-- PHP 8.2+
-- Composer
-- Node.js & NPM
-
-### Passo a Passo
-1. **Clonar o repositório**
    ```bash
-   git clone <url-do-repositorio>
-   cd laravel-cardapio
+   git clone <repo-url> /var/www/meu-restaurante
+   cd /var/www/meu-restaurante
    ```
 
-2. **Instalar dependências do PHP**
+2. Use o comando de bootstrap:
+
    ```bash
-   composer install
+   php artisan instance:bootstrap meu-restaurante \
+       --domain=meu-restaurante.ddns.net \
+       --whatsapp=5511999999999
    ```
 
-3. **Configurar ambiente**
+   Esse comando cria o `.env`, gera a chave, roda migrações e seeds, e configura as variáveis da instância.
+
+3. Configure o banco de dados PostgreSQL no `.env`:
+
    ```bash
-   cp .env.example .env
-   php artisan key:generate
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=meu_restaurante
+   DB_USERNAME=meu_restaurante
+   DB_PASSWORD=senha_segura
    ```
 
-4. **Configurar Banco de Dados**
-   - O projeto utiliza SQLite por padrão. Certifique-se de que o arquivo `database/database.sqlite` existe ou execute:
+4. Crie os assets de marca:
+
    ```bash
-   touch database/database.sqlite
+   # Coloque os logos em public/logos/meu-restaurante/
+   # O favicon padrão é copiado automaticamente pelo bootstrap
    ```
 
-5. **Executar Migrações e Seeders**
-   ```bash
-   php artisan migrate --seed
-   ```
+5. Configure o servidor web (nginx/Caddy) para apontar para a pasta `public/`.
 
-6. **Instalar dependências do Frontend**
-   ```bash
-   npm install
-   npm run dev
-   ```
+> Ou, se preferir fazer manualmente: copie `.env.example` para `.env`, edite as variáveis (`APP_INSTANCE`, `APP_NAME`, `APP_URL`, `APP_LOGO_PATH`, `APP_WHATSAPP`, `DB_DATABASE`), rode `php artisan key:generate`, `php artisan migrate --force` e `php artisan db:seed --force`.
 
-7. **Link de Storage**
-   ```bash
-   php artisan storage:link
-   ```
+## Deploy
 
----
+```bash
+git pull
+composer install --no-dev
+php artisan migrate --force
+npm ci && npm run build
+sudo supervisorctl restart programa:programa_00
+```
 
-## 🎯 Customização (Whitelabel)
+## Admin
 
-Para adaptar este sistema para um novo cliente, basta:
-1. Alterar as cores primárias no arquivo `tailwind.config.js`.
-2. Atualizar a logo no componente `AppLogo.tsx`.
-3. Configurar o número do WhatsApp do administrador no arquivo `.env` (`ADMIN_WHATSAPP`).
+- **Rota**: `/admin`
+- **Credenciais padrão**: `admin@cardapio.com` / `admin123`
+- **Funcionalidades**: CRUD de produtos, categorias e fotos; gerenciamento de pedidos; personalização de aparência
 
----
+## Licença
 
-## 📄 Licença
-Este projeto é distribuído sob a licença MIT.
+Distribuído sob a licença MIT.
