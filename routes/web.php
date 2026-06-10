@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CepController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -17,6 +18,8 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
 Route::get('/api/cep/{cep}', [CepController::class, 'show'])->name('api.cep');
+
+Route::get('/manifest.json', ManifestController::class)->name('manifest');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/my-orders', [CustomerOrderController::class, 'index'])->name('customer.orders');
@@ -33,6 +36,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('settings/appearance', [AppearanceSettingsController::class, 'index'])->name('settings.appearance');
     Route::patch('settings/appearance', [AppearanceSettingsController::class, 'update'])->name('settings.appearance.update');
 });
+
+Route::get('/sw.js', function () {
+    return response()
+        ->view('sw')
+        ->header('Content-Type', 'application/javascript');
+})->name('sw');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/settings.php';

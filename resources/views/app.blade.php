@@ -5,12 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v={{ filemtime(public_path('favicon.svg')) }}">
+    <link rel="manifest" href="{{ route('manifest') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset(config('app.logo_path') . '/favicon.svg') }}?v={{ filemtime(public_path(config('app.logo_path') . '/favicon.svg')) }}">
     <meta name="theme-color" content="{{ App\Models\Setting::getValue('primary_color', '#2C402E') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="/icons/icon-512x512.png">
+    <link rel="apple-touch-icon" href="{{ asset(config('app.logo_path') . '/icons/icon-512x512.png') }}">
 
     @php
         $primary = App\Models\Setting::getValue('primary_color', '#ef4444');
@@ -74,7 +74,7 @@
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js?v={{ filemtime(public_path('sw.js')) }}')
+                    navigator.serviceWorker.register('{{ route('sw') }}')
                         .then(reg => {
                             console.log('SW registered!', reg);
 
