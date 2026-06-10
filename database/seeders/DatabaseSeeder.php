@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,8 +10,20 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminUserSeeder::class,
-            RestauranteSeeder::class,
             SettingsSeeder::class,
         ]);
+
+        $instance = config('app.instance');
+        match ($instance) {
+            'gameleira' => $this->call([
+                Gameleira\SettingsSeeder::class,
+                Gameleira\RestauranteSeeder::class,
+            ]),
+            'hamburgueria' => $this->call([
+                Hamburgueria\SettingsSeeder::class,
+                Hamburgueria\RestauranteSeeder::class,
+            ]),
+            default => null,
+        };
     }
 }
