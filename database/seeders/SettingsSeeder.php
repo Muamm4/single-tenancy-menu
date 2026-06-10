@@ -16,7 +16,7 @@ class SettingsSeeder extends Seeder
             'foreground' => '#1E221F',
             'header_background' => '#2C402E',
             'header_foreground' => '#ffffff',
-            'restaurant_name' => 'Gameleira Esfiharia & Bistrô',
+            'restaurant_name' => 'Menu Digital',
             'restaurant_whatsapp' => '',
             'menu_only' => 'false',
         ]);

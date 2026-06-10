@@ -19,13 +19,13 @@ return new class extends Migration
 
         // Insert default color settings
         DB::table('settings')->insert([
-            ['key' => 'primary_color', 'value' => '#2C402E', 'group' => 'appearance'],
-            ['key' => 'primary_foreground', 'value' => '#ffffff', 'group' => 'appearance'],
+            ['key' => 'primary_color', 'value' => '#fc5d5dff', 'group' => 'appearance'],
+            ['key' => 'primary_foreground', 'value' => '#000000', 'group' => 'appearance'],
             ['key' => 'background', 'value' => '#FBF9F5', 'group' => 'appearance'],
             ['key' => 'foreground', 'value' => '#1E221F', 'group' => 'appearance'],
-            ['key' => 'header_background', 'value' => '#2C402E', 'group' => 'appearance'],
-            ['key' => 'header_foreground', 'value' => '#ffffff', 'group' => 'appearance'],
-            ['key' => 'restaurant_name', 'value' => 'Gameleira Esfiharia & Bistrô', 'group' => 'appearance'],
+            ['key' => 'header_background', 'value' => '#000000', 'group' => 'appearance'],
+            ['key' => 'header_foreground', 'value' => '#f2f2f2ff', 'group' => 'appearance'],
+            ['key' => 'restaurant_name', 'value' => 'Menu Digital', 'group' => 'appearance'],
         ]);
     }
 
