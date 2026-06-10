@@ -29,12 +29,13 @@ class AppearanceSettingsController extends Controller
             'header_background' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'header_foreground' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'restaurant_name' => ['nullable', 'string', 'max:255'],
+            'restaurant_whatsapp' => ['nullable', 'string', 'max:20'],
             'menu_only' => ['nullable', 'string', 'in:true,false'],
         ]);
 
         Setting::setGroup('appearance', $validated);
 
-        Cache::forget('appearance_settings');
+        Cache::forget('appearance_settings_' . config('app.instance'));
 
         return redirect()->route('admin.settings.appearance')
             ->with('success', 'Cores atualizadas com sucesso!');

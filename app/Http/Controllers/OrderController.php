@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -76,7 +77,8 @@ class OrderController extends Controller
                 $whatsappMessage .= "\nEndereço: {$address->street}, {$address->number} - {$address->neighborhood}, {$address->city} - {$address->zip_code}";
             }
 
-            $whatsappLink = 'https://wa.me/'.preg_replace('/\D/', '', $order->customer_phone).'?text='.urlencode($whatsappMessage);
+            $restaurantWhatsapp = Setting::getValue('restaurant_whatsapp', config('app.whatsapp'));
+            $whatsappLink = 'https://wa.me/'.preg_replace('/\D/', '', $restaurantWhatsapp).'?text='.urlencode($whatsappMessage);
 
             return response()->json([
                 'order_id' => $order->id,

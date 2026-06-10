@@ -1,6 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Store, Eye } from 'lucide-react';
+import { Store, Eye, Phone } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +28,7 @@ export default function Appearance({ colors }: AppearanceProps) {
     const [headerBackground, setHeaderBackground] = useState(colors.header_background || '#2C402E');
     const [headerForeground, setHeaderForeground] = useState(colors.header_foreground || '#ffffff');
     const [restaurantName, setRestaurantName] = useState(colors.restaurant_name || '');
+    const [restaurantWhatsapp, setRestaurantWhatsapp] = useState(colors.restaurant_whatsapp || '');
     const [menuOnly, setMenuOnly] = useState(colors.menu_only === 'true');
 
     const previewStyle = {
@@ -50,6 +51,7 @@ export default function Appearance({ colors }: AppearanceProps) {
             header_background: headerBackground,
             header_foreground: headerForeground,
             restaurant_name: restaurantName,
+            restaurant_whatsapp: restaurantWhatsapp,
             menu_only: menuOnly ? 'true' : 'false',
         });
     };
@@ -94,6 +96,23 @@ export default function Appearance({ colors }: AppearanceProps) {
                                         />
                                         {errors?.restaurant_name && (
                                             <p className="text-sm text-destructive">{errors.restaurant_name}</p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="restaurant_whatsapp">WhatsApp do restaurante</Label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                                            <Input
+                                                id="restaurant_whatsapp"
+                                                type="text"
+                                                value={restaurantWhatsapp}
+                                                onChange={(e) => setRestaurantWhatsapp(e.target.value)}
+                                                placeholder="5511999999999"
+                                                className="pl-9"
+                                            />
+                                        </div>
+                                        {errors?.restaurant_whatsapp && (
+                                            <p className="text-sm text-destructive">{errors.restaurant_whatsapp}</p>
                                         )}
                                     </div>
                                 </CardContent>
