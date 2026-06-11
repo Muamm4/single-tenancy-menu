@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AppearanceSettingsController;
 use App\Http\Controllers\Admin\BusinessHoursSettingsController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\AddressController;
 
 Route::get('/', [MenuController::class, 'index'])->name('menu');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');

@@ -68,12 +68,6 @@ export default function Appearance({ colors }: AppearanceProps) {
                     </p>
                 </div>
 
-                {flash?.success && (
-                    <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-                        {flash.success}
-                    </div>
-                )}
-
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-6 lg:grid-cols-2">
                         <div className="space-y-6">

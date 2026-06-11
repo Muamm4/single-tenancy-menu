@@ -1,5 +1,6 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { User, Phone, Mail, Save, MapPin, Plus, Trash2, CheckCircle, LogOut, LayoutDashboard } from 'lucide-react';
+import { useState } from 'react';
+import { User, Phone, Mail, Save, MapPin, Plus, Trash2, CheckCircle, LogOut, LayoutDashboard, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,6 +47,32 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
         is_default: false,
     });
 
+    const [loadingCep, setLoadingCep] = useState(false);
+
+    const handleCepChange = (value: string) => {
+        const digits = value.replace(/\D/g, '').slice(0, 8);
+        const masked = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+        addressForm.setData('zip_code', masked);
+    };
+
+    const lookupCep = async () => {
+        const raw = addressForm.data.zip_code.replace(/\D/g, '');
+        if (raw.length !== 8) return;
+
+        setLoadingCep(true);
+        try {
+            const response = await fetch(`/api/cep/${raw}`);
+            if (!response.ok) return;
+            const data = await response.json();
+            addressForm.setData('street', data.street || '');
+            addressForm.setData('neighborhood', data.neighborhood || '');
+            addressForm.setData('city', data.city || '');
+        } catch {
+        } finally {
+            setLoadingCep(false);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         patch(route('profile.update'));
@@ -55,6 +82,7 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
         e.preventDefault();
         addressForm.post(route('addresses.store'), {
             onSuccess: () => addressForm.reset(),
+            preserveScroll: true,
         });
     };
 
@@ -182,24 +210,36 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
                             </h4>
                             <form onSubmit={(e) => { e.preventDefault(); handleAddAddress(e); }} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div className="sm:col-span-2 space-y-1">
+                                    <Label className="text-xs">CEP</Label>
+                                    <div className="relative">
+                                        <Input
+                                            value={addressForm.data.zip_code}
+                                            onChange={e => handleCepChange(e.target.value)}
+                                            onBlur={lookupCep}
+                                            className="h-8 text-sm pr-8"
+                                            placeholder="Digite o CEP"
+                                            maxLength={9}
+                                        />
+                                        {loadingCep && (
+                                            <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 size-4 animate-pulse text-muted-foreground" />
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-2 space-y-1">
                                     <Label className="text-xs">Rua</Label>
-                                    <Input value={addressForm.data.street} onChange={e => addressForm.setData('street', e.target.value)} className="h-8 text-sm" />
+                                    <Input value={addressForm.data.street} onChange={e => addressForm.setData('street', e.target.value)} className="h-8 text-sm" placeholder="Nome da rua" />
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-xs">Número</Label>
-                                    <Input value={addressForm.data.number} onChange={e => addressForm.setData('number', e.target.value)} className="h-8 text-sm" />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-xs">CEP</Label>
-                                    <Input value={addressForm.data.zip_code} onChange={e => addressForm.setData('zip_code', e.target.value)} className="h-8 text-sm" />
+                                    <Input value={addressForm.data.number} onChange={e => addressForm.setData('number', e.target.value)} className="h-8 text-sm" placeholder="Nº" />
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-xs">Bairro</Label>
-                                    <Input value={addressForm.data.neighborhood} onChange={e => addressForm.setData('neighborhood', e.target.value)} className="h-8 text-sm" />
+                                    <Input value={addressForm.data.neighborhood} onChange={e => addressForm.setData('neighborhood', e.target.value)} className="h-8 text-sm" placeholder="Bairro" />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="sm:col-span-2 space-y-1">
                                     <Label className="text-xs">Cidade</Label>
-                                    <Input value={addressForm.data.city} onChange={e => addressForm.setData('city', e.target.value)} className="h-8 text-sm" />
+                                    <Input value={addressForm.data.city} onChange={e => addressForm.setData('city', e.target.value)} className="h-8 text-sm" placeholder="Cidade" />
                                 </div>
                                 <Button type="submit" disabled={addressForm.processing} className="sm:col-span-2 gap-2 h-9">
                                     <Plus className="size-4" />
