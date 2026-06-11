@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice, formatDate, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
+import { Pagination } from '@/components/pagination';
+import { EmptyState } from '@/components/empty-state';
 
 interface OrdersIndexProps {
     orders: PaginatedResponse<Order>;
@@ -71,15 +73,11 @@ export default function OrdersIndex({ orders, filterStatus }: OrdersIndexProps) 
                 <Card>
                     <CardContent className="p-0">
                         {orders.data.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16">
-                                <ClipboardList className="mb-4 size-12 text-muted-foreground/40" />
-                                <p className="text-lg font-medium">Nenhum pedido encontrado</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {filterStatus
-                                        ? 'Nenhum pedido com este status'
-                                        : 'Ainda não há pedidos'}
-                                </p>
-                            </div>
+                            <EmptyState
+                                icon={ClipboardList}
+                                title="Nenhum pedido encontrado"
+                                description={filterStatus ? 'Nenhum pedido com este status' : 'Ainda não há pedidos'}
+                            />
                         ) : (
                             <>
                                 <div className="divide-y md:hidden">
@@ -233,29 +231,7 @@ export default function OrdersIndex({ orders, filterStatus }: OrdersIndexProps) 
                             </>
                         )}
 
-                        {orders.links && orders.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 border-t p-4">
-                                {orders.links.map((link, index) => {
-                                    if (index === 0 || index === orders.links.length - 1) {
-                                        return null;
-                                    }
-                                    return (
-                                        <Link
-                                            key={index}
-                                            href={link.url || '#'}
-                                            className={`flex size-8 items-center justify-center rounded text-sm ${
-                                                link.active
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'hover:bg-muted'
-                                            }`}
-                                            preserveScroll
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        )}
+                        <Pagination links={orders.links} />
                     </CardContent>
                 </Card>
             </div>

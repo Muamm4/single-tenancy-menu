@@ -6,14 +6,9 @@ import { useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Pagination } from '@/components/pagination';
+import { DeleteDialog } from '@/components/delete-dialog';
+import { EmptyState } from '@/components/empty-state';
 
 interface AddonCategoriesIndexProps {
     addonCategories: PaginatedResponse<AddonCategory>;
@@ -168,51 +163,18 @@ export default function AddonCategoriesIndex({ addonCategories }: AddonCategorie
                             </div>
                         </div>
 
-                        {addonCategories.links && addonCategories.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 border-t p-4">
-                                {addonCategories.links.map((link, index) => {
-                                    if (index === 0 || index === addonCategories.links.length - 1) {
-                                        return null;
-                                    }
-                                    return (
-                                        <Link
-                                            key={index}
-                                            href={link.url || '#'}
-                                            className={`flex size-8 items-center justify-center rounded text-sm ${
-                                                link.active
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'hover:bg-muted'
-                                            }`}
-                                            preserveScroll
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        )}
+                        <Pagination links={addonCategories.links} />
                     </CardContent>
                 </Card>
             </div>
 
-            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Excluir Categoria de Adicional</DialogTitle>
-                        <DialogDescription>
-                            Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                            Cancelar
-                        </Button>
-                        <Button variant="destructive" onClick={confirmDelete}>
-                            Excluir
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={confirmDelete}
+                title="Excluir Categoria de Adicional"
+                description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+            />
         </AppLayout>
     );
 }

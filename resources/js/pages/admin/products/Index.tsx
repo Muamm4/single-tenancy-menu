@@ -16,6 +16,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { formatPrice } from '@/lib/utils';
+import { Pagination } from '@/components/pagination';
+import { DeleteDialog } from '@/components/delete-dialog';
+import { EmptyState } from '@/components/empty-state';
 
 interface ProductsIndexProps {
     products: PaginatedResponse<Product>;
@@ -108,15 +111,11 @@ export default function ProductsIndex({ products, categories, filterCategory }: 
                 <Card>
                     <CardContent className="p-0">
                         {products.data.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16">
-                                <Package className="mb-4 size-12 text-muted-foreground/40" />
-                                <p className="text-lg font-medium">Nenhum produto encontrado</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {filterCategory
-                                        ? 'Tente selecionar outra categoria'
-                                        : 'Clique em "Novo Produto" para adicionar'}
-                                </p>
-                            </div>
+                            <EmptyState
+                                icon={Package}
+                                title="Nenhum produto encontrado"
+                                description={filterCategory ? 'Tente selecionar outra categoria' : 'Clique em "Novo Produto" para adicionar'}
+                            />
                         ) : (
                             <>
                                 {/* Mobile card layout */}
@@ -254,51 +253,18 @@ export default function ProductsIndex({ products, categories, filterCategory }: 
                             </>
                         )}
 
-                        {products.links && products.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 border-t p-4">
-                                {products.links.map((link, index) => {
-                                    if (index === 0 || index === products.links.length - 1) {
-                                        return null;
-                                    }
-                                    return (
-                                        <Link
-                                            key={index}
-                                            href={link.url || '#'}
-                                            className={`flex size-8 items-center justify-center rounded text-sm ${
-                                                link.active
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'hover:bg-muted'
-                                            }`}
-                                            preserveScroll
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        )}
+                        <Pagination links={products.links} />
                     </CardContent>
                 </Card>
             </div>
 
-            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Excluir Produto</DialogTitle>
-                        <DialogDescription>
-                            Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                            Cancelar
-                        </Button>
-                        <Button variant="destructive" onClick={confirmDelete}>
-                            Excluir
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={confirmDelete}
+                title="Excluir Produto"
+                description="Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita."
+            />
         </AppLayout>
     );
 }

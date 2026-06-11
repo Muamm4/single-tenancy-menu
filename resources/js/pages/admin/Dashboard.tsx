@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice, formatDate, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
+import { EmptyState } from '@/components/empty-state';
 
 interface DashboardProps {
     totalCategories: number;
@@ -117,9 +118,9 @@ export default function Dashboard({
                         </div>
 
                         {recentOrders.length === 0 ? (
-                            <p className="text-center text-muted-foreground py-8">
-                                Nenhum pedido encontrado
-                            </p>
+                            <EmptyState
+                                title="Nenhum pedido encontrado"
+                            />
                         ) : (
                             <>
                                 {/* Desktop table */}

@@ -7,14 +7,9 @@ import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Pagination } from '@/components/pagination';
+import { DeleteDialog } from '@/components/delete-dialog';
+import { EmptyState } from '@/components/empty-state';
 
 interface CategoriesIndexProps {
     categories: PaginatedResponse<Category>;
@@ -65,9 +60,7 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                         {/* Mobile: Card Layout */}
                         <div className="md:hidden">
                             {categories.data.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <p className="text-sm text-muted-foreground">Nenhuma categoria encontrada</p>
-                                </div>
+                                <EmptyState title="Nenhuma categoria encontrada" />
                             ) : (
                                 <div className="divide-y">
                                     {categories.data.map((category) => (
@@ -160,51 +153,18 @@ export default function CategoriesIndex({ categories }: CategoriesIndexProps) {
                             </div>
                         </div>
 
-                        {categories.links && categories.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 border-t p-4">
-                                {categories.links.map((link, index) => {
-                                    if (index === 0 || index === categories.links.length - 1) {
-                                        return null;
-                                    }
-                                    return (
-                                        <Link
-                                            key={index}
-                                            href={link.url || '#'}
-                                            className={`flex size-8 items-center justify-center rounded text-sm ${
-                                                link.active
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'hover:bg-muted'
-                                            }`}
-                                            preserveScroll
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        )}
+                        <Pagination links={categories.links} />
                     </CardContent>
                 </Card>
             </div>
 
-            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Excluir Categoria</DialogTitle>
-                        <DialogDescription>
-                            Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                            Cancelar
-                        </Button>
-                        <Button variant="destructive" onClick={confirmDelete}>
-                            Excluir
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={confirmDelete}
+                title="Excluir Categoria"
+                description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+            />
         </AppLayout>
     );
 }

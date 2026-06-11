@@ -8,13 +8,30 @@ import { LayoutGrid, List } from 'lucide-react';
 
 type ViewMode = 'grid' | 'list';
 
-interface MenuIndexProps {
-    categories: Category[];
+interface DayHours {
+    day: number;
+    open: string;
+    close: string;
+    closed: boolean;
 }
 
-export default function MenuIndex({ categories }: MenuIndexProps) {
+interface MenuIndexProps {
+    categories: Category[];
+    hours: DayHours[];
+}
+
+function getTodayHours(hours: DayHours[]): { today: DayHours | null; dayName: string } {
+    const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    const today = new Date().getDay();
+    const todayHours = hours.find((h) => h.day === today);
+    return { today: todayHours ?? null, dayName: dayNames[today] };
+}
+
+export default function MenuIndex({ categories, hours }: MenuIndexProps) {
     const { appColors } = usePage().props as unknown as { appColors: Record<string, string> };
     const restaurantName = appColors?.restaurant_name || '';
+
+    const { today: todayHours, dayName } = getTodayHours(hours);
     const [activeCategory, setActiveCategory] = useState('');
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
         if (typeof window !== 'undefined') {
@@ -72,6 +89,14 @@ export default function MenuIndex({ categories }: MenuIndexProps) {
                         <div className="text-center">
                             <h1 className="text-3xl font-bold">{restaurantName || 'Cardápio'}</h1>
                             <p className="mt-1 text-sm opacity-90">Escolha seus produtos favoritos</p>
+                            {todayHours && (
+                                <p className="mt-1 text-xs opacity-75">
+                                    {todayHours.closed
+                                        ? `Fechado hoje (${dayName})`
+                                        : `Aberto hoje • ${todayHours.open} - ${todayHours.close}`
+                                    }
+                                </p>
+                            )}
                         </div>
                         <div className="flex-1 flex justify-end">
                             <div className="flex bg-black/20 rounded-lg p-0.5 gap-0.5">
