@@ -2,50 +2,42 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import { type NavGroup } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Tags, ShoppingBag, ListOrdered, Palette, Store, Package } from 'lucide-react';
+import { LayoutGrid, Tags, ShoppingBag, Package, ListOrdered, Palette, Store } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const sidebarGroups: NavGroup[] = [
     {
         title: 'Dashboard',
-        href: '/admin',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Categorias',
-        href: '/admin/categories',
-        icon: Tags,
+        items: [
+            { title: 'Dashboard', href: '/admin', icon: LayoutGrid },
+        ],
     },
     {
         title: 'Produtos',
-        href: '/admin/products',
-        icon: ShoppingBag,
+        items: [
+            { title: 'Categorias', href: '/admin/categories', icon: Tags },
+            { title: 'Produtos', href: '/admin/products', icon: ShoppingBag },
+            { title: 'Adicionais', href: '/admin/addon-categories', icon: Package },
+        ],
     },
     {
-        title: 'Pedidos',
-        href: '/admin/orders',
-        icon: ListOrdered,
-    },
-    {
-        title: 'Adicionais',
-        href: '/admin/addon-categories',
-        icon: Package,
-    },
-    {
-        title: 'Aparência',
-        href: '/admin/settings/appearance',
-        icon: Palette,
+        title: 'Gerencial',
+        items: [
+            { title: 'Pedidos', href: '/admin/orders', icon: ListOrdered },
+            { title: 'Aparência', href: '/admin/settings/appearance', icon: Palette },
+        ],
     },
     {
         title: 'Cardápio',
-        href: '/',
-        icon: Store,
+        items: [
+            { title: 'Ver Cardápio', href: '/', icon: Store },
+        ],
     },
 ];
 
-const footerNavItems: NavItem[] = [];
+const footerNavItems = [];
 
 export function AppSidebar() {
     return (
@@ -63,7 +55,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain groups={sidebarGroups} />
             </SidebarContent>
 
             <SidebarFooter>
