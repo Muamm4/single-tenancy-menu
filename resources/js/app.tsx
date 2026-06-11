@@ -3,13 +3,17 @@ import '../css/app.css';
 import { createInertiaApp, usePage, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { initializeTheme } from './hooks/use-appearance';
 import { ToastProvider } from './components/ui/Toast';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-function AppWithFade({ children }: { children: React.ReactNode }) {
+/**
+ * Global layout wrapping every page — loading bar + fade transition.
+ * Uses `.layout` in `resolve` to live inside Inertia's context so usePage() works.
+ */
+function GlobalLayout({ children }: { children: ReactNode }) {
     const { url } = usePage();
     const [loading, setLoading] = useState(false);
 
@@ -45,22 +49,31 @@ function AppWithFade({ children }: { children: React.ReactNode }) {
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
+    resolve: async (name) => {
+        const page = await resolvePageComponent(
+            `./pages/${name}.tsx`,
+            import.meta.glob('./pages/**/*.tsx'),
+        );
+
+        const originalLayout = page.default.layout;
+        page.default.layout = (pageComponent: ReactNode) => (
+            <GlobalLayout>
+                {originalLayout ? originalLayout(pageComponent) : pageComponent}
+            </GlobalLayout>
+        );
+
+        return page;
+    },
     setup({ el, App, props }) {
         const root = createRoot(el);
 
         root.render(
             <ToastProvider>
-                <AppWithFade>
-                    <App {...props} />
-                </AppWithFade>
+                <App {...props} />
             </ToastProvider>
         );
     },
-    progress: {
-        color: '#4B5563',
-    },
+    progress: false,
 });
 
-// This will set light / dark mode on load...
 initializeTheme();
