@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { CartItem, Product } from '@/types';
 
 interface AddonInput {
@@ -34,7 +35,8 @@ function getItemKey(item: CartItem): string {
     return `${item.id}_${addonIds}`;
 }
 
-export const useCartStore = create<CartState>()((set, get) => ({
+export const useCartStore = create<CartState>()(
+    persist((set, get) => ({
     items: [],
     addItem: (product, quantity = 1, addons = []) => {
         const price = product.promotional_price ?? product.price;
@@ -93,4 +95,6 @@ export const useCartStore = create<CartState>()((set, get) => ({
             const addonTotal = (item.addons || []).reduce((s, a) => s + a.price, 0);
             return sum + (item.price + addonTotal) * item.quantity;
         }, 0),
-}));
+}),
+    { name: 'cart' }
+));
