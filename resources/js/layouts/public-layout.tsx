@@ -39,7 +39,7 @@ export function PublicLayout({ title, description, children, showBack, headerRig
                         <div className="flex-1" />
                     )}
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold">{title}</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
                         {description && <p className="mt-1 text-sm opacity-90">{description}</p>}
                     </div>
                     {headerRight || <div className="flex-1" />}

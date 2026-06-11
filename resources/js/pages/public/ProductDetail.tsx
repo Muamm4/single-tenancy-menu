@@ -4,7 +4,7 @@ import { Product, Addon } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCartStore } from '@/stores/cartStore';
-import { useToast, ToastProvider } from '@/components/ui/Toast';
+import { useToast } from '@/components/ui/Toast';
 import { ArrowLeft, Check, Tag, ShoppingCart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
@@ -89,7 +89,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     const total = productPrice + addonTotal;
 
     return (
-        <ToastProvider>
+        <>
             <Head title={product.name} />
 
             <div className="min-h-dvh bg-background flex flex-col">
@@ -259,6 +259,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     </div>
                 </footer>
             </div>
-        </ToastProvider>
+        </>
     );
 }
+
