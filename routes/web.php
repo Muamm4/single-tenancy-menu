@@ -27,6 +27,7 @@ Route::get('/manifest.json', ManifestController::class)->name('manifest');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/my-orders', [CustomerOrderController::class, 'index'])->name('customer.orders');
+Route::get('/my-orders/{order}', [CustomerOrderController::class, 'show'])->name('customer.orders.show');
     Route::resource('addresses', AddressController::class)->only(['store', 'update', 'destroy']);
 });
 

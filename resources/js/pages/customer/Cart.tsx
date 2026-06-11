@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, ShoppingBag, MapPin } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, ShoppingBag, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,10 +25,12 @@ export default function Cart() {
         auth?: { user?: { name?: string; email?: string; phone?: string } };
         addresses?: Address[];
         defaultAddress?: Address | null;
+        isOpen?: boolean;
     }>();
 
     const appColors = (props as any).appColors as Record<string, string> | undefined;
     const menuOnly = appColors?.menu_only === 'true';
+    const isOpen = props.isOpen !== false; // defaults to true if not set
 
     const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
     const { addToast } = useToast();
@@ -314,9 +316,16 @@ export default function Cart() {
                         />
                     </div>
 
+                    {!isOpen && (
+                        <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                            <Clock className="size-4 shrink-0" />
+                            <span>Restaurante fechado no momento. O pedido não pode ser enviado.</span>
+                        </div>
+                    )}
+
                     <Button
                         type="submit"
-                        disabled={isSubmitting || items.length === 0}
+                        disabled={isSubmitting || items.length === 0 || !isOpen}
                         className="w-full gap-2"
                         size="lg"
                     >

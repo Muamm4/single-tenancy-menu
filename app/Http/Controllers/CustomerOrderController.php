@@ -27,4 +27,17 @@ class CustomerOrderController extends Controller
             'orders' => $orders
         ]);
     }
+
+    public function show($id)
+    {
+        $order = Order::with('address')->findOrFail($id);
+
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return Inertia::render('customer/OrderShow', [
+            'order' => $order,
+        ]);
+    }
 }

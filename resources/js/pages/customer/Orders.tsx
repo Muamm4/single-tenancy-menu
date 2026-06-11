@@ -48,7 +48,8 @@ export default function Orders({ orders }: OrdersProps) {
                     {orders.map((order) => {
                         const StatusIcon = getStatusIcon(order.status);
                         return (
-                            <Card key={order.id}>
+                            <Link key={order.id} href={route('customer.orders.show', order.id)} className="block">
+                            <Card className="cursor-pointer hover:border-primary/50 transition-colors">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-base flex items-center gap-2">
@@ -85,6 +86,7 @@ export default function Orders({ orders }: OrdersProps) {
                                     </div>
                                 </CardContent>
                             </Card>
+                        </Link>
                         );
                     })}
                 </div>

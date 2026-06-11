@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+import { Minus, Plus, Trash2, ShoppingCart, Clock } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
 import { useToast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,8 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
+    const { props } = usePage();
+    const isOpen = (props as any).isOpen !== false;
     const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
     const { addToast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +33,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
     const [notes, setNotes] = useState('');
 
     const handleSubmit = async () => {
+        if (!isOpen) {
+            addToast('Restaurante fechado no momento.', 'error');
+            return;
+        }
+
         if (!customerName.trim() || !customerPhone.trim()) {
             addToast('Por favor, preencha seu nome e telefone.', 'error');
             return;
@@ -285,9 +293,16 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                                             />
                                         </div>
                                     </div>
+                                    {!isOpen && (
+                                        <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                                            <Clock className="size-4 shrink-0" />
+                                            <span>Restaurante fechado no momento.</span>
+                                        </div>
+                                    )}
+
                                     <Button
                                         onClick={handleSubmit}
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || !isOpen}
                                         className="w-full h-14 text-lg font-bold shadow-lg"
                                         size="lg"
                                     >

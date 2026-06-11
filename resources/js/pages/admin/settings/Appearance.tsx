@@ -19,7 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Appearance({ colors }: AppearanceProps) {
-    const { errors, flash } = usePage().props as any;
+    const { errors } = usePage().props as any;
 
     const [primaryColor, setPrimaryColor] = useState(colors.primary_color || '#2C402E');
     const [primaryForeground, setPrimaryForeground] = useState(colors.primary_foreground || '#ffffff');

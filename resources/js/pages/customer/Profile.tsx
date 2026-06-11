@@ -74,7 +74,7 @@ export default function Profile({ auth, addresses = [], defaultAddress = null }:
 
     return (
         <PublicLayout title="Minha Conta" description="Gerencie seus dados e preferências">
-            <div className="max-w-md mx-auto space-y-6">
+            <div className="max-w-md mx-auto space-y-6 mb-16">
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">

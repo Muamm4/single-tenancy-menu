@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { BottomNav } from '@/components/public/BottomNav';
 import { ArrowLeft } from 'lucide-react';
-import { type ReactNode } from 'react';
+import { useRef, useEffect, type ReactNode } from 'react';
 
 interface PublicLayoutProps {
     title: string;
@@ -33,17 +33,26 @@ export function PublicLayout({
     showBottomNav = true,
     footer,
 }: PublicLayoutProps) {
-    const mainClasses = maxWidth === 'none'
-        ? ''
-        : `container mx-auto px-4 py-8 ${maxWidthClasses[maxWidth]}`;
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Scroll to top when navigating to a new page
+        scrollRef.current?.scrollTo(0, 0);
+    }, [title]);
+
+    const mainClasses = [
+        'flex-1 overflow-y-auto',
+        maxWidth === 'none' ? '' : `container mx-auto px-4 py-8 ${maxWidthClasses[maxWidth]}`,
+        showBottomNav && 'pb-24',
+    ].filter(Boolean).join(' ');
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="h-dvh flex flex-col overflow-hidden bg-background">
             <Head title={title} />
 
             {customHeader ?? (
                 <header
-                    className="p-4 shrink-0 pt-[calc(var(--safe-top)+1rem)]"
+                    className="shrink-0 p-4 pt-[calc(var(--safe-top)+1rem)]"
                     style={{ backgroundColor: 'var(--header-background)', color: 'var(--header-foreground)' }}
                 >
                     <div className="flex items-center justify-between max-w-6xl mx-auto">
@@ -67,7 +76,7 @@ export function PublicLayout({
                 </header>
             )}
 
-            <main className={mainClasses}>
+            <main ref={scrollRef} className={mainClasses}>
                 {children}
             </main>
 

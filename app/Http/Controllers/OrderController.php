@@ -13,6 +13,10 @@ class OrderController extends Controller
 {
     public function store(Request $request)
     {
+        if (! Setting::isOpen()) {
+            return response()->json(['error' => 'Restaurante fechado no momento.'], 403);
+        }
+
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_phone' => 'required|string|max:20',

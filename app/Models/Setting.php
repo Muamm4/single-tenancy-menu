@@ -35,4 +35,37 @@ class Setting extends Model
             );
         }
     }
+
+    /**
+     * Check if the restaurant is currently open based on business hours.
+     */
+    public static function isOpen(): bool
+    {
+        $hoursData = static::getGroup('business_hours');
+        $hours = isset($hoursData['business_hours'])
+            ? json_decode($hoursData['business_hours'], true)
+            : [];
+
+        if (empty($hours)) {
+            return true; // no hours configured = assume open
+        }
+
+        $now = now();
+        $today = $now->dayOfWeek; // 0=Sunday, 6=Saturday
+        $currentTime = $now->format('H:i');
+
+        foreach ($hours as $day) {
+            if ((int) $day['day'] === $today) {
+                if (! empty($day['closed'])) {
+                    return false;
+                }
+                if ($currentTime >= $day['open'] && $currentTime < $day['close']) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -38,6 +38,11 @@ class HandleInertiaRequests extends Middleware
             'appColors' => fn () => Schema::hasTable('settings')
                 ? Cache::remember('appearance_settings_' . config('app.instance'), 86400, fn () => Setting::getGroup('appearance'))
                 : [],
+            'flash' => fn () => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
+            'isOpen' => fn () => Schema::hasTable('settings') ? Setting::isOpen() : true,
         ];
     }
 }

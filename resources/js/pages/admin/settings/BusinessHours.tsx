@@ -43,7 +43,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function BusinessHours({ hours }: BusinessHoursProps) {
-    const { errors, flash } = usePage().props as any;
+    const { errors } = usePage().props as any;
 
     const [days, setDays] = useState<DayHours[]>(() => {
         if (hours && hours.length === 7) {
@@ -83,12 +83,6 @@ export default function BusinessHours({ hours }: BusinessHoursProps) {
                         Defina os horários de abertura e fechamento do seu restaurante
                     </p>
                 </div>
-
-                {flash?.success && (
-                    <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-                        {flash.success}
-                    </div>
-                )}
 
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
