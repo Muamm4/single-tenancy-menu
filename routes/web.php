@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AppearanceSettingsController;
+use App\Http\Controllers\Admin\BusinessHoursSettingsController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 Route::get('/', [MenuController::class, 'index'])->name('menu');
@@ -52,6 +53,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('settings/appearance', [AppearanceSettingsController::class, 'index'])->name('settings.appearance');
     Route::patch('settings/appearance', [AppearanceSettingsController::class, 'update'])->name('settings.appearance.update');
+
+    Route::get('settings/business-hours', [BusinessHoursSettingsController::class, 'index'])->name('settings.business-hours');
+    Route::patch('settings/business-hours', [BusinessHoursSettingsController::class, 'update'])->name('settings.business-hours.update');
 });
 
 Route::get('/sw.js', function () {

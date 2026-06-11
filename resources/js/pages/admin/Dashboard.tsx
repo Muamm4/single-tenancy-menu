@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { formatPrice, formatDate, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
 
 interface DashboardProps {
     totalCategories: number;
@@ -21,50 +22,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/admin',
     },
 ];
-
-function formatPrice(price: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(price);
-}
-
-function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    }).format(date);
-}
-
-function getStatusBadgeVariant(status: Order['status']): 'default' | 'secondary' | 'destructive' {
-    switch (status) {
-        case 'pending':
-            return 'secondary';
-        case 'accepted':
-            return 'default';
-        case 'rejected':
-            return 'destructive';
-        default:
-            return 'secondary';
-    }
-}
-
-function getStatusLabel(status: Order['status']): string {
-    switch (status) {
-        case 'pending':
-            return 'Pendente';
-        case 'accepted':
-            return 'Aceito';
-        case 'rejected':
-            return 'Recusado';
-        default:
-            return status;
-    }
-}
 
 export default function Dashboard({
     totalCategories,

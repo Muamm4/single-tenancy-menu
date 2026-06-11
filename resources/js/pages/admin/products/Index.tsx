@@ -15,14 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { formatPrice } from '@/lib/utils';
 
 interface ProductsIndexProps {
     products: PaginatedResponse<Product>;
@@ -34,13 +27,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/admin' },
     { title: 'Produtos', href: '/admin/products' },
 ];
-
-function formatPrice(price: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(price);
-}
 
 export default function ProductsIndex({ products, categories, filterCategory }: ProductsIndexProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

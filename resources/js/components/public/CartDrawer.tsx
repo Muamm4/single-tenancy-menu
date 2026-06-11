@@ -12,6 +12,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import { formatPrice } from '@/lib/utils';
 
 interface CartDrawerProps {
     open: boolean;
@@ -106,11 +107,6 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             setNotes('');
             onOpenChange(false);
         }
-    };
-
-    const formatPrice = (price: number) => {
-        const num = typeof price === 'string' ? parseFloat(price) : price;
-        return `R$ ${num.toFixed(2).replace('.', ',')}`;
     };
 
     return (

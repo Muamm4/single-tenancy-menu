@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useCartStore } from '@/stores/cartStore';
 import { useToast, ToastProvider } from '@/components/ui/Toast';
 import { ArrowLeft, Check, Tag, ShoppingCart } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface ProductDetailProps {
     product: Product;
@@ -13,13 +14,6 @@ interface ProductDetailProps {
 
 interface SelectedAddons {
     [categoryId: number]: Addon[];
-}
-
-function formatPrice(price: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(price);
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {

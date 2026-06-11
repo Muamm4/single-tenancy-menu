@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavGroup } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Tags, ShoppingBag, Package, ListOrdered, Palette, Store } from 'lucide-react';
+import { LayoutGrid, Tags, ShoppingBag, Package, ListOrdered, Palette, Store, Clock } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const sidebarGroups: NavGroup[] = [
@@ -26,6 +26,7 @@ const sidebarGroups: NavGroup[] = [
         title: 'Gerencial',
         items: [
             { title: 'Pedidos', href: '/admin/orders', icon: ListOrdered },
+            { title: 'Horários', href: '/admin/settings/business-hours', icon: Clock },
             { title: 'Aparência', href: '/admin/settings/appearance', icon: Palette },
         ],
     },

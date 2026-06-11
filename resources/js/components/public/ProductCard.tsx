@@ -44,7 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">Sem imagem</div>
                         )}
                         {product.has_promotion && (
-                            <div className="absolute top-1 left-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                            <div className="absolute top-1 left-1 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
                                 <Tag className="size-2.5" /> PROMO
                             </div>
                         )}
@@ -59,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
                                 {product.has_promotion ? (
                                     <>
                                         <span className="text-xs text-muted-foreground line-through">{product.formatted_price}</span>
-                                        <span className="font-bold text-sm text-red-500">{product.formatted_promotional_price}</span>
+                                        <span className="font-bold text-sm text-destructive">{product.formatted_promotional_price}</span>
                                     </>
                                 ) : (
                                     <span className="font-bold text-sm">{product.formatted_price}</span>
@@ -87,7 +87,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground">Sem imagem</div>
                     )}
                     {product.has_promotion && (
-                        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                        <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                             <Tag className="size-3" /> PROMOÇÃO
                         </div>
                     )}
@@ -103,7 +103,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
                             {product.has_promotion ? (
                                 <>
                                     <span className="text-sm text-muted-foreground line-through">{product.formatted_price}</span>
-                                    <span className="font-bold text-lg text-red-500">{product.formatted_promotional_price}</span>
+                                    <span className="font-bold text-lg text-destructive">{product.formatted_promotional_price}</span>
                                 </>
                             ) : (
                                 <span className="font-bold text-lg">{product.formatted_price}</span>

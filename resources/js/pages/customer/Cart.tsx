@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/stores/cartStore';
 import { BottomNav } from '@/components/public/BottomNav';
 import { useToast, ToastProvider } from '@/components/ui/Toast';
+import { formatPrice } from '@/lib/utils';
 
 interface Address {
     id: number;
@@ -17,13 +18,6 @@ interface Address {
     city: string;
     zip_code: string;
     is_default: boolean;
-}
-
-function formatPrice(price: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(price);
 }
 
 export default function Cart() {

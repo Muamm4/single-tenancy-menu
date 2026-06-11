@@ -6,25 +6,11 @@ import { useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { formatPrice } from '@/lib/utils';
 
 interface AddonsIndexProps {
     addonCategory: AddonCategory;
     addons: PaginatedResponse<Addon>;
-}
-
-function formatPrice(price: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(price);
 }
 
 export default function AddonsIndex({ addonCategory, addons }: AddonsIndexProps) {

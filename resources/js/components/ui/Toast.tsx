@@ -59,7 +59,7 @@ const ToastItem: React.FC<{
                         {isSuccess ? (
                             <CheckCircle size={20} className="text-green-500" />
                         ) : (
-                            <AlertCircle size={20} className="text-red-500" />
+                            <AlertCircle size={20} className="text-destructive" />
                         )}
                     </div>
 
@@ -76,7 +76,7 @@ const ToastItem: React.FC<{
 
                 <div className="h-1.5 bg-gray-100">
                     <div
-                        className={`h-full ${isSuccess ? 'bg-green-500' : 'bg-red-500'}`}
+                        className={`h-full ${isSuccess ? 'bg-green-600' : 'bg-destructive'}`}
                         style={{ width: `${remaining * 100}%` }}
                     />
                 </div>

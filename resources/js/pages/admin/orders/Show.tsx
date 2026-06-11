@@ -6,50 +6,10 @@ import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatPrice, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
 
 interface OrderShowProps {
     order: Order;
-}
-
-function formatPrice(price: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(price);
-}
-
-function getStatusBadgeVariant(status: Order['status']): 'default' | 'secondary' | 'destructive' | 'outline' {
-    switch (status) {
-        case 'pending':
-            return 'secondary';
-        case 'accepted':
-            return 'default';
-        case 'preparing':
-            return 'outline';
-        case 'ready':
-            return 'default';
-        case 'rejected':
-            return 'destructive';
-        default:
-            return 'secondary';
-    }
-}
-
-function getStatusLabel(status: Order['status']): string {
-    switch (status) {
-        case 'pending':
-            return 'Pendente';
-        case 'accepted':
-            return 'Aceito';
-        case 'preparing':
-            return 'Preparando';
-        case 'ready':
-            return 'Pronto';
-        case 'rejected':
-            return 'Recusado';
-        default:
-            return status;
-    }
 }
 
 export default function OrderShow({ order }: OrderShowProps) {
