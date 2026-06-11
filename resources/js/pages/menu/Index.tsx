@@ -101,14 +101,14 @@ export default function MenuIndex({ categories, hours }: MenuIndexProps) {
                             <div className="flex bg-black/20 rounded-lg p-0.5 gap-0.5">
                                 <button
                                     onClick={() => toggleView('grid')}
-                                    className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white/80'}`}
+                                    className={`p-1.5 rounded-md transition-all duration-200 active:scale-90 ${viewMode === 'grid' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white/80'}`}
                                     title="Visualização em grade"
                                 >
                                     <LayoutGrid className="size-4" />
                                 </button>
                                 <button
                                     onClick={() => toggleView('list')}
-                                    className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white/80'}`}
+                                    className={`p-1.5 rounded-md transition-all duration-200 active:scale-90 ${viewMode === 'list' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white/80'}`}
                                     title="Visualização em lista"
                                 >
                                     <List className="size-4" />
@@ -124,8 +124,8 @@ export default function MenuIndex({ categories, hours }: MenuIndexProps) {
                             <button
                                 key={category.id}
                                 onClick={() => scrollToCategory(category.slug)}
-                                className={`px-3 py-1 rounded-full text-xs font-medium transition-all border ${activeCategory === category.slug
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 active:scale-90 border ${activeCategory === category.slug
+                                    ? 'bg-primary text-primary-foreground border-primary shadow-sm hover:shadow-md'
                                     : 'bg-muted text-muted-foreground border-border hover:bg-muted/80'
                                     }`}
                             >

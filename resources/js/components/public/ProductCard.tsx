@@ -35,11 +35,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
 
     if (variant === 'list') {
         return (
-            <Link href={productUrl} className="block bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <Link href={productUrl} className="group block bg-card border border-border rounded-lg overflow-hidden shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer hover:border-primary/20">
                 <div className="flex gap-4 p-0">
-                    <div className="w-28 h-28 shrink-0 bg-muted relative">
+                    <div className="w-28 h-28 shrink-0 bg-muted relative overflow-hidden">
                         {product.image ? (
-                            <img src={`/storage/${product.image}`} alt={product.name} className="w-full h-full object-cover" />
+                            <img src={`/storage/${product.image}`} alt={product.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">Sem imagem</div>
                         )}
@@ -78,11 +78,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
     }
 
     return (
-        <Link href={productUrl} className="block bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <Link href={productUrl} className="group block bg-card border border-border rounded-lg overflow-hidden shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer hover:border-primary/20">
             <div className="flex flex-col">
-                <div className="aspect-video bg-muted relative">
+                <div className="aspect-video bg-muted relative overflow-hidden">
                     {product.image ? (
-                        <img src={`/storage/${product.image}`} alt={product.name} className="w-full h-full object-cover" />
+                        <img src={`/storage/${product.image}`} alt={product.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground">Sem imagem</div>
                     )}

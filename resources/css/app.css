@@ -60,6 +60,9 @@
 
     --animate-slide-in-right: slide-in-right 0.3s ease-out;
     --animate-slide-out-right: slide-out-right 0.3s ease-in forwards;
+    --animate-fade-in: fade-in 0.25s ease-out;
+    --animate-shimmer: shimmer 1.5s infinite;
+    --animate-loading-bar: loading-bar 1.5s ease-in-out infinite;
 }
 
 @keyframes slide-in-right {
@@ -82,6 +85,39 @@
         transform: translateX(100%);
         opacity: 0;
     }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes loading-bar {
+    0% { transform: translateX(-100%); }
+    40% { transform: translateX(0%); }
+    60% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.25s ease-out;
+}
+
+.animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
 
 /*

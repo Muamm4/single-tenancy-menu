@@ -44,18 +44,21 @@ export function BottomNav() {
                     <Link
                         key={item.name}
                         href={item.href}
-                        className={`flex flex-col items-center gap-1 transition-colors ${item.active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                        className={`relative flex flex-col items-center gap-1 transition-all duration-200 active:scale-90 ${item.active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
                             }`}
                     >
-                        <item.icon className={`size-6 ${item.active ? 'fill-primary/20' : ''}`} />
+                        <item.icon className={`size-6 transition-all duration-200 ${item.active ? 'fill-primary/20 scale-110' : ''}`} />
                         <span className="text-[10px] font-medium">{item.name}</span>
+                        {item.active && (
+                            <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                        )}
                     </Link>
                 ))}
 
                 {canInstall && (
                     <button
                         onClick={install}
-                        className="flex flex-col items-center gap-1 transition-colors text-primary"
+                        className="flex flex-col items-center gap-1 transition-all duration-200 active:scale-90 text-primary"
                         title="Instalar aplicativo"
                     >
                         <Download className="size-6" />
