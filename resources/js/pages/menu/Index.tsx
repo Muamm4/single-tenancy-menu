@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { Category } from '@/types';
 import { ProductCard } from '@/components/public/ProductCard';
+import { ProductCardSkeleton } from '@/components/public/ProductCardSkeleton';
 import { BottomNav } from '@/components/public/BottomNav';
 import { LayoutGrid, List } from 'lucide-react';
 
@@ -32,6 +33,16 @@ export default function MenuIndex({ categories, hours }: MenuIndexProps) {
 
     const { today: todayHours, dayName } = getTodayHours(hours);
     const [activeCategory, setActiveCategory] = useState('');
+    const [showSkeleton, setShowSkeleton] = useState(true);
+
+    useEffect(() => {
+        if (categories && categories.length > 0) {
+            const t = setTimeout(() => setShowSkeleton(false), 200);
+            return () => clearTimeout(t);
+        } else {
+            setShowSkeleton(false);
+        }
+    }, [categories]);
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
         if (typeof window !== 'undefined') {
             return (localStorage.getItem('cardapio-view') as ViewMode) || 'grid';
@@ -142,9 +153,14 @@ export default function MenuIndex({ categories, hours }: MenuIndexProps) {
                             {category.description && <p className="text-muted-foreground mb-8">{category.description}</p>}
 
                             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' : 'space-y-3'}>
-                                {category.products.map((product) => (
-                                    <ProductCard key={product.id} product={product} variant={viewMode} />
-                                ))}
+                                {showSkeleton
+                                    ? Array.from({ length: 3 }).map((_, i) => (
+                                        <ProductCardSkeleton key={i} variant={viewMode} />
+                                    ))
+                                    : category.products.map((product) => (
+                                        <ProductCard key={product.id} product={product} variant={viewMode} />
+                                    ))
+                                }
                             </div>
                         </section>
                     ))}

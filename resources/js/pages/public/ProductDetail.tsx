@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { Product, Addon } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCartStore } from '@/stores/cartStore';
 import { useToast } from '@/components/ui/Toast';
+import { PublicLayout } from '@/layouts/public-layout';
 import { ArrowLeft, Check, Tag, ShoppingCart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
@@ -88,26 +89,70 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     const addonTotal = getAddonPriceTotal();
     const total = productPrice + addonTotal;
 
-    return (
-        <>
-            <Head title={product.name} />
+    const pageHeader = (
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b">
+            <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => router.visit(route('menu'))}
+                    className="shrink-0"
+                >
+                    <ArrowLeft className="size-5" />
+                </Button>
+                <h1 className="font-semibold text-lg truncate">{product.name}</h1>
+            </div>
+        </header>
+    );
 
-            <div className="min-h-dvh bg-background flex flex-col">
-                <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b">
-                    <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.visit(route('menu'))}
-                            className="shrink-0"
-                        >
-                            <ArrowLeft className="size-5" />
-                        </Button>
-                        <h1 className="font-semibold text-lg truncate">{product.name}</h1>
+    const pageFooter = (
+        <footer className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 pb-[calc(0.75rem+var(--safe-bottom,0px))]">
+            <div className="max-w-2xl mx-auto">
+                <div className="space-y-1 mb-3">
+                    <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Produto</span>
+                        <span>{formatPrice(productPrice)}</span>
                     </div>
-                </header>
+                    {addonTotal > 0 && (
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Adicionais</span>
+                            <span>{formatPrice(addonTotal)}</span>
+                        </div>
+                    )}
+                </div>
 
-                <main className="flex-1 max-w-2xl mx-auto w-full px-4 pb-32 mb-16">
+                <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-base">Total</span>
+                    <span className="font-bold text-lg">{formatPrice(total)}</span>
+                </div>
+
+                <Button
+                    className="w-full h-12 text-base font-semibold"
+                    onClick={handleAddToCart}
+                    disabled={!canConfirm() || loading}
+                >
+                    {loading ? (
+                        'Adicionando...'
+                    ) : (
+                        <>
+                            <ShoppingCart className="size-5 mr-2" />
+                            Adicionar ao carrinho
+                        </>
+                    )}
+                </Button>
+            </div>
+        </footer>
+    );
+
+    return (
+        <PublicLayout
+            title={product.name}
+            customHeader={pageHeader}
+            showBottomNav={false}
+            footer={pageFooter}
+            maxWidth="none"
+        >
+            <div className="max-w-2xl mx-auto w-full px-4 pb-32">
                     {product.image && (
                         <div className="aspect-video bg-muted rounded-lg overflow-hidden mt-4 mb-6">
                             <img
@@ -220,46 +265,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                             ))}
                         </div>
                     )}
-                </main>
-
-                <footer className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 pb-[calc(0.75rem+var(--safe-bottom,0px))]">
-                    <div className="max-w-2xl mx-auto">
-                        <div className="space-y-1 mb-3">
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground">Produto</span>
-                                <span>{formatPrice(productPrice)}</span>
-                            </div>
-                            {addonTotal > 0 && (
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-muted-foreground">Adicionais</span>
-                                    <span>{formatPrice(addonTotal)}</span>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="font-bold text-base">Total</span>
-                            <span className="font-bold text-lg">{formatPrice(total)}</span>
-                        </div>
-
-                        <Button
-                            className="w-full h-12 text-base font-semibold"
-                            onClick={handleAddToCart}
-                            disabled={!canConfirm() || loading}
-                        >
-                            {loading ? (
-                                'Adicionando...'
-                            ) : (
-                                <>
-                                    <ShoppingCart className="size-5 mr-2" />
-                                    Adicionar ao carrinho
-                                </>
-                            )}
-                        </Button>
-                    </div>
-                </footer>
             </div>
-        </>
+        </PublicLayout>
     );
 }
 
