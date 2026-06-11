@@ -70,9 +70,7 @@ export default function AddonsIndex({ addonCategory, addons }: AddonsIndexProps)
                         {/* Mobile: Card Layout */}
                         <div className="md:hidden">
                             {addons.data.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <p className="text-sm text-muted-foreground">Nenhum adicional encontrado</p>
-                                </div>
+                                <EmptyState title="Nenhum adicional encontrado" />
                             ) : (
                                 <div className="divide-y">
                                     {addons.data.map((addon) => (

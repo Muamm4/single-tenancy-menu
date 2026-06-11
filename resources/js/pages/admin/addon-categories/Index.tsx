@@ -59,9 +59,7 @@ export default function AddonCategoriesIndex({ addonCategories }: AddonCategorie
                         {/* Mobile: Card Layout */}
                         <div className="md:hidden">
                             {addonCategories.data.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <p className="text-sm text-muted-foreground">Nenhuma categoria encontrada</p>
-                                </div>
+                                <EmptyState title="Nenhuma categoria encontrada" />
                             ) : (
                                 <div className="divide-y">
                                     {addonCategories.data.map((cat) => (
