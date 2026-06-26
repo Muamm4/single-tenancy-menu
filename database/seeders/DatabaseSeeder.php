@@ -19,11 +19,14 @@ class DatabaseSeeder extends Seeder
                 Gameleira\SettingsSeeder::class,
                 Gameleira\RestauranteSeeder::class,
             ]),
-            'hamburgueria' => $this->call([
+            'parrilla' => $this->call([
                 Hamburgueria\SettingsSeeder::class,
                 Hamburgueria\RestauranteSeeder::class,
             ]),
-            default => null,
+            'default' => $this->call([
+                Default\SettingsSeeder::class,
+                Default\RestauranteSeeder::class,
+            ]),
         };
     }
 }
